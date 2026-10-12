@@ -1,0 +1,81 @@
+# .gitignore da tese (Paulo Freitas), versão de 11 out 2026
+# Regra: os dados são privados e ficam só no PC.
+# Funciona ao contrário do habitual: fica TUDO de fora, menos o que está listado em 2.
+# Nota: [jJ][pP][gG] quer dizer .jpg em maiúsculas ou minúsculas.
+
+# 1) Tudo de fora por omissão: data/, outputs/, annotations/, dataset e qualquer pasta que não esteja em 2
+/*
+
+# 2) O que entra: código, configurações, documentação e conjuntos
+!/.gitignore
+!/.gitattributes
+!/*.md
+!/*.py
+!/*.sh
+!/environment.yml
+!/requirements*.txt
+!/LICENSE
+!/scripts/
+!/tools/
+!/eval/
+!/methods/
+!/configs/
+!/tests/
+!/docs/
+!/sets/
+
+# 3) Rede de segurança: mesmo dentro dessas pastas, nunca entram ficheiros de dados
+# imagens e vídeo
+*.[jJ][pP][gG]
+*.[jJ][pP][eE][gG]
+*.[pP][nN][gG]
+*.[bB][mM][pP]
+*.[tT][iI][fF]
+*.[tT][iI][fF][fF]
+*.[gG][iI][fF]
+*.[wW][eE][bB][pP]
+*.[mM][pP]4
+*.[aA][vV][iI]
+*.[mM][oO][vV]
+*.[mM][kK][vV]
+# tabelas e bases de dados (neste projeto, CSV e Excel são dados)
+*.[cC][sS][vV]
+*.[tT][sS][vV]
+*.[xX][lL][sS][xX]
+*.[xX][lL][sS]
+*.[pP][aA][rR][qQ][uU][eE][tT]
+*.[fF][eE][aA][tT][hH][eE][rR]
+*.[dD][bB]
+*.[sS][qQ][lL][iI][tT][eE]
+*.[sS][qQ][lL][iI][tT][eE]3
+# documentos e notebooks (podem ter imagens embutidas)
+*.[dD][oO][cC][xX]
+*.[dD][oO][cC]
+*.[pP][dD][fF]
+*.[pP][pP][tT][xX]
+*.[iI][pP][yY][nN][bB]
+# arrays, embeddings e pesos de modelos
+*.[nN][pP][yY]
+*.[nN][pP][zZ]
+*.[pP][tT]
+*.[pP][tT][hH]
+*.[cC][kK][pP][tT]
+*.[pP][kK][lL]
+*.[jJ][oO][bB][lL][iI][bB]
+*.[hH]5
+*.[hH][dD][fF]5
+*.[sS][aA][fF][eE][tT][eE][nN][sS][oO][rR][sS]
+*.[oO][nN][nN][xX]
+*.[bB][iI][nN]
+# arquivos comprimidos e logs
+*.[zZ][iI][pP]
+*.[tT][aA][rR]
+*.[gG][zZ]
+*.7[zZ]
+*.[lL][oO][gG]
+# lixo do Python e segredos
+__pycache__/
+*.py[cC]
+.ipynb_checkpoints/
+.pytest_cache/
+.env

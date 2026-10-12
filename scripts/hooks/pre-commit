@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+# pre-commit — guarda do repositório da tese (corre sozinho em cada git commit).
+# Recusa o commit se:
+#   - entrarem dados, ficheiros que não sejam código ou texto, ou ficheiros com mais de 1 MB;
+#   - forem alterados ou apagados conjuntos congelados em sets/;
+#   - o email dos commits não for o noreply do GitHub (o email pessoal nunca entra no histórico).
+# Ativar (uma vez por clone):  git config core.hooksPath scripts/hooks
+# Só em caso excecional, e registado em docs/decisoes.md:  git commit --no-verify
+set -u
+LIMITE_KB=1024
+PERMITIDO='\.(py|sh|md|ya?ml|json|txt|toml|cfg|ini|html|js|css|tex|bib|cff)$|(^|/)(\.gitignore|\.gitattributes|pre-commit|LICENSE)$'
+PASTAS_DADOS='^(data|outputs|annotations)/'
+
+problemas=()
+shopt -s nocasematch
+while IFS= read -r -d '' f; do
+  if [[ $f =~ $PASTAS_DADOS ]]; then
+    problemas+=("pasta de dados: $f")
+    continue
+  fi
+  [[ $f =~ $PERMITIDO ]] || problemas+=("não é código nem texto: $f")
+  kb=$(( $(git cat-file -s ":$f" 2>/dev/null || echo 0) / 1024 ))
+  (( kb > LIMITE_KB )) && problemas+=("maior que 1 MB (${kb} KB): $f")
+done < <(git diff --cached --name-only --diff-filter=ACMR -z)
+shopt -u nocasematch
+
+# sets/ está congelado desde 7 out 2026: pode receber ficheiros novos, mas nada se altera nem se apaga
+while IFS= read -r -d '' f; do
+  problemas+=("conjunto congelado alterado ou apagado: $f")
+done < <(git diff --cached --name-only --diff-filter=MDR -z -- sets/)
+
+# email do autor e de quem faz o commit: só o noreply do GitHub
+for quem in GIT_AUTHOR_IDENT GIT_COMMITTER_IDENT; do
+  id=$(git var "$quem" 2>/dev/null)
+  email=${id#*<}
+  email=${email%%>*}
+  if [[ ! $email =~ @users\.noreply\.github\.com$ ]]; then
+    problemas+=("o email dos commits não é o noreply do GitHub; corrige com: git config user.email <o teu noreply>")
+    break
+  fi
+done
+
+if (( ${#problemas[@]} )); then
+  echo "Commit recusado:" >&2
+  printf '  %s\n' "${problemas[@]}" >&2
+  echo "Para tirar um ficheiro do commit: git restore --staged <ficheiro>" >&2
+  exit 1
+fi
+exit 0

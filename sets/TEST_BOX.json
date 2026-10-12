@@ -1,0 +1,3125 @@
+{
+ "nome": "TEST_BOX",
+ "versao": 1,
+ "criado": "2026-10-07",
+ "semente": 0,
+ "regra": "definição do protocolo (secção Conjuntos de avaliação)",
+ "n": 445,
+ "janelas": [
+  {
+   "split": "Dataset_Teste",
+   "caso": "0013",
+   "seed": 2405,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0013",
+   "seed": 2903,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0013",
+   "seed": 8461,
+   "categoria": "hiperplasia_nodular",
+   "classe": "outras"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0018",
+   "seed": 784,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0018",
+   "seed": 2366,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0023",
+   "seed": 1004,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0023",
+   "seed": 1076,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0023",
+   "seed": 1186,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0025",
+   "seed": 828,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0025",
+   "seed": 2136,
+   "categoria": "xantelasma",
+   "classe": "xantelasma"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0025",
+   "seed": 8906,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0032",
+   "seed": 794,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0032",
+   "seed": 6629,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0032",
+   "seed": 6880,
+   "categoria": "polipo",
+   "classe": "polipo"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0033",
+   "seed": 1566,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0033",
+   "seed": 1570,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0033",
+   "seed": 1572,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0033",
+   "seed": 1577,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0034",
+   "seed": 6087,
+   "categoria": "eritema",
+   "classe": "eritema"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0034",
+   "seed": 6297,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0034",
+   "seed": 6871,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0036",
+   "seed": 7149,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0036",
+   "seed": 9377,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0050",
+   "seed": 649,
+   "categoria": "ulcera",
+   "classe": "ulcera"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0050",
+   "seed": 1082,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0050",
+   "seed": 1541,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0050",
+   "seed": 1894,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0050",
+   "seed": 4332,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0066",
+   "seed": 1281,
+   "categoria": "xantelasma",
+   "classe": "xantelasma"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0066",
+   "seed": 2004,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0066",
+   "seed": 2402,
+   "categoria": "xantelasma",
+   "classe": "xantelasma"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0066",
+   "seed": 3573,
+   "categoria": "ulcera",
+   "classe": "ulcera"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0066",
+   "seed": 3584,
+   "categoria": "ulcera",
+   "classe": "ulcera"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0069",
+   "seed": 1129,
+   "categoria": "linfangiectasia",
+   "classe": "outras"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0069",
+   "seed": 2211,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0069",
+   "seed": 2383,
+   "categoria": "eritema",
+   "classe": "eritema"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0069",
+   "seed": 2778,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0069",
+   "seed": 3435,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0069",
+   "seed": 5242,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0069",
+   "seed": 5316,
+   "categoria": "ulcera",
+   "classe": "ulcera"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0069",
+   "seed": 6759,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0069",
+   "seed": 18235,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0069",
+   "seed": 18388,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0076",
+   "seed": 6155,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0076",
+   "seed": 6182,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0076",
+   "seed": 7225,
+   "categoria": "polipo",
+   "classe": "polipo"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0076",
+   "seed": 7912,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0088",
+   "seed": 791,
+   "categoria": "xantelasma",
+   "classe": "xantelasma"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0088",
+   "seed": 1171,
+   "categoria": "xantelasma",
+   "classe": "xantelasma"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0088",
+   "seed": 2585,
+   "categoria": "eritema",
+   "classe": "eritema"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0093",
+   "seed": 680,
+   "categoria": "xantelasma",
+   "classe": "xantelasma"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0093",
+   "seed": 685,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0093",
+   "seed": 853,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0093",
+   "seed": 999,
+   "categoria": "xantelasma",
+   "classe": "xantelasma"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0093",
+   "seed": 1156,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0093",
+   "seed": 1316,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0093",
+   "seed": 2180,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0093",
+   "seed": 2477,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0093",
+   "seed": 4842,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0101",
+   "seed": 6137,
+   "categoria": "xantelasma",
+   "classe": "xantelasma"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0101",
+   "seed": 7036,
+   "categoria": "xantelasma",
+   "classe": "xantelasma"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0102",
+   "seed": 762,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0102",
+   "seed": 770,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0102",
+   "seed": 1324,
+   "categoria": "xantelasma",
+   "classe": "xantelasma"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0123",
+   "seed": 227,
+   "categoria": "polipo",
+   "classe": "polipo"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0126",
+   "seed": 10884,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0126",
+   "seed": 10991,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0126",
+   "seed": 11174,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0132",
+   "seed": 1095,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0132",
+   "seed": 1623,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0132",
+   "seed": 2329,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0132",
+   "seed": 3061,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0132",
+   "seed": 4554,
+   "categoria": "polipo",
+   "classe": "polipo"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0132",
+   "seed": 6188,
+   "categoria": "linfangiectasia",
+   "classe": "outras"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0132",
+   "seed": 8135,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0132",
+   "seed": 8267,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0143",
+   "seed": 3827,
+   "categoria": "polipo",
+   "classe": "polipo"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0143",
+   "seed": 5043,
+   "categoria": "ulcera",
+   "classe": "ulcera"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0143",
+   "seed": 6344,
+   "categoria": "eritema",
+   "classe": "eritema"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0143",
+   "seed": 7413,
+   "categoria": "ulcera",
+   "classe": "ulcera"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0143",
+   "seed": 7446,
+   "categoria": "ulcera",
+   "classe": "ulcera"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0143",
+   "seed": 7510,
+   "categoria": "ulcera",
+   "classe": "ulcera"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0143",
+   "seed": 7552,
+   "categoria": "ulcera",
+   "classe": "ulcera"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0152",
+   "seed": 65,
+   "categoria": "polipo",
+   "classe": "polipo"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0152",
+   "seed": 582,
+   "categoria": "polipo",
+   "classe": "polipo"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0152",
+   "seed": 875,
+   "categoria": "polipo",
+   "classe": "polipo"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0152",
+   "seed": 1317,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0152",
+   "seed": 3112,
+   "categoria": "polipo",
+   "classe": "polipo"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0152",
+   "seed": 3587,
+   "categoria": "polipo",
+   "classe": "polipo"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0152",
+   "seed": 4988,
+   "categoria": "polipo",
+   "classe": "polipo"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0154",
+   "seed": 590,
+   "categoria": "eritema",
+   "classe": "eritema"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0154",
+   "seed": 2628,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0154",
+   "seed": 4820,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0154",
+   "seed": 4910,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0154",
+   "seed": 5890,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0154",
+   "seed": 5941,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0158",
+   "seed": 5016,
+   "categoria": "eritema",
+   "classe": "eritema"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0158",
+   "seed": 6897,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0167",
+   "seed": 451,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0167",
+   "seed": 5587,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0167",
+   "seed": 5612,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0167",
+   "seed": 5618,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0167",
+   "seed": 5664,
+   "categoria": "sangue",
+   "classe": "outras"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0167",
+   "seed": 5731,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0167",
+   "seed": 6351,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0170",
+   "seed": 17277,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0190",
+   "seed": 690,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0190",
+   "seed": 1677,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0191",
+   "seed": 13261,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0191",
+   "seed": 15742,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0191",
+   "seed": 17383,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0193",
+   "seed": 1830,
+   "categoria": "eritema",
+   "classe": "eritema"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0193",
+   "seed": 1973,
+   "categoria": "xantelasma",
+   "classe": "xantelasma"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0193",
+   "seed": 2944,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0209",
+   "seed": 2158,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0209",
+   "seed": 2269,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0209",
+   "seed": 3402,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0209",
+   "seed": 5660,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0216",
+   "seed": 7112,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0216",
+   "seed": 8888,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0216",
+   "seed": 9875,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0218",
+   "seed": 2091,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0218",
+   "seed": 2201,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0218",
+   "seed": 2229,
+   "categoria": "polipo",
+   "classe": "polipo"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0218",
+   "seed": 2311,
+   "categoria": "xantelasma",
+   "classe": "xantelasma"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0218",
+   "seed": 6693,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0218",
+   "seed": 6997,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0218",
+   "seed": 7410,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0218",
+   "seed": 8172,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0243",
+   "seed": 5576,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0243",
+   "seed": 6398,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0243",
+   "seed": 6770,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0246",
+   "seed": 1448,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0246",
+   "seed": 1505,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0246",
+   "seed": 3984,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0246",
+   "seed": 5225,
+   "categoria": "ulcera",
+   "classe": "ulcera"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0246",
+   "seed": 6354,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0254",
+   "seed": 1072,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0254",
+   "seed": 1081,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0254",
+   "seed": 1087,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0254",
+   "seed": 1094,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0254",
+   "seed": 3855,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0254",
+   "seed": 5981,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0254",
+   "seed": 6628,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0256",
+   "seed": 3999,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0256",
+   "seed": 4791,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0264",
+   "seed": 436,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0264",
+   "seed": 979,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0264",
+   "seed": 2471,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0287",
+   "seed": 941,
+   "categoria": "polipo",
+   "classe": "polipo"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0293",
+   "seed": 677,
+   "categoria": "polipo",
+   "classe": "polipo"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0293",
+   "seed": 3037,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0293",
+   "seed": 3507,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0293",
+   "seed": 3607,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0293",
+   "seed": 3646,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0300",
+   "seed": 5730,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0300",
+   "seed": 5782,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0300",
+   "seed": 5902,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0300",
+   "seed": 5907,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0300",
+   "seed": 6160,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0300",
+   "seed": 6587,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0300",
+   "seed": 8434,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0300",
+   "seed": 8600,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0300",
+   "seed": 8613,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0301",
+   "seed": 4733,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0302",
+   "seed": 400,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0302",
+   "seed": 3585,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0302",
+   "seed": 4561,
+   "categoria": "xantelasma",
+   "classe": "xantelasma"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0302",
+   "seed": 5391,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0302",
+   "seed": 5533,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0302",
+   "seed": 6593,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0302",
+   "seed": 8513,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0302",
+   "seed": 8689,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0302",
+   "seed": 8973,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0302",
+   "seed": 9051,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0318",
+   "seed": 2368,
+   "categoria": "linfangiectasia",
+   "classe": "outras"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0318",
+   "seed": 2501,
+   "categoria": "linfangiectasia",
+   "classe": "outras"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0318",
+   "seed": 5177,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0318",
+   "seed": 10936,
+   "categoria": "ulcera",
+   "classe": "ulcera"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0318",
+   "seed": 10937,
+   "categoria": "ulcera",
+   "classe": "ulcera"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0319",
+   "seed": 10700,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0319",
+   "seed": 11718,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0319",
+   "seed": 12639,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0339",
+   "seed": 560,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0339",
+   "seed": 1310,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0339",
+   "seed": 2564,
+   "categoria": "ulcera",
+   "classe": "ulcera"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0339",
+   "seed": 2660,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0339",
+   "seed": 3081,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0339",
+   "seed": 4502,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0351",
+   "seed": 4153,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0351",
+   "seed": 4684,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0351",
+   "seed": 4753,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0360",
+   "seed": 834,
+   "categoria": "ulcera",
+   "classe": "ulcera"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0360",
+   "seed": 961,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0360",
+   "seed": 1555,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0360",
+   "seed": 2000,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0360",
+   "seed": 2009,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0360",
+   "seed": 2072,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0360",
+   "seed": 3858,
+   "categoria": "eritema",
+   "classe": "eritema"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0360",
+   "seed": 3879,
+   "categoria": "sangue",
+   "classe": "outras"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0368",
+   "seed": 2025,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0368",
+   "seed": 2434,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0368",
+   "seed": 3243,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0368",
+   "seed": 6672,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0368",
+   "seed": 8053,
+   "categoria": "ulcera",
+   "classe": "ulcera"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0368",
+   "seed": 8552,
+   "categoria": "ulcera",
+   "classe": "ulcera"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0368",
+   "seed": 8590,
+   "categoria": "ulcera",
+   "classe": "ulcera"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0368",
+   "seed": 8634,
+   "categoria": "ulcera",
+   "classe": "ulcera"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0368",
+   "seed": 8715,
+   "categoria": "ulcera",
+   "classe": "ulcera"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0370",
+   "seed": 4448,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0370",
+   "seed": 6220,
+   "categoria": "eritema",
+   "classe": "eritema"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0370",
+   "seed": 7024,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0370",
+   "seed": 11495,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0370",
+   "seed": 12185,
+   "categoria": "eritema",
+   "classe": "eritema"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0377",
+   "seed": 1740,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0377",
+   "seed": 1828,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0377",
+   "seed": 1868,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0385",
+   "seed": 4240,
+   "categoria": "linfangiectasia",
+   "classe": "outras"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0385",
+   "seed": 6899,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0385",
+   "seed": 7960,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0385",
+   "seed": 9616,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0385",
+   "seed": 12359,
+   "categoria": "eritema",
+   "classe": "eritema"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0385",
+   "seed": 12468,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0385",
+   "seed": 12727,
+   "categoria": "eritema",
+   "classe": "eritema"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0388",
+   "seed": 1710,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0388",
+   "seed": 2399,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0388",
+   "seed": 3483,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0394",
+   "seed": 1011,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0394",
+   "seed": 1445,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0394",
+   "seed": 8129,
+   "categoria": "polipo",
+   "classe": "polipo"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0396",
+   "seed": 1247,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0396",
+   "seed": 1256,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0396",
+   "seed": 1856,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0396",
+   "seed": 2707,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0396",
+   "seed": 4271,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0396",
+   "seed": 4424,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0399",
+   "seed": 195,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0399",
+   "seed": 2379,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0399",
+   "seed": 11997,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0399",
+   "seed": 12628,
+   "categoria": "subepitelial",
+   "classe": "outras"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0421",
+   "seed": 3219,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0421",
+   "seed": 5946,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0424",
+   "seed": 7343,
+   "categoria": "ulcera",
+   "classe": "ulcera"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0424",
+   "seed": 7815,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0424",
+   "seed": 7821,
+   "categoria": "ulcera",
+   "classe": "ulcera"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0424",
+   "seed": 19322,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0424",
+   "seed": 22205,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0431",
+   "seed": 3856,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0431",
+   "seed": 8854,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0432",
+   "seed": 4968,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0432",
+   "seed": 5681,
+   "categoria": "linfangiectasia",
+   "classe": "outras"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0441",
+   "seed": 4654,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0441",
+   "seed": 4950,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0441",
+   "seed": 5578,
+   "categoria": "xantelasma",
+   "classe": "xantelasma"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0441",
+   "seed": 5760,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0441",
+   "seed": 6410,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0446",
+   "seed": 1732,
+   "categoria": "polipo",
+   "classe": "polipo"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0446",
+   "seed": 2029,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0446",
+   "seed": 5527,
+   "categoria": "linfangiectasia",
+   "classe": "outras"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0446",
+   "seed": 6697,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0446",
+   "seed": 7404,
+   "categoria": "polipo",
+   "classe": "polipo"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0446",
+   "seed": 16632,
+   "categoria": "polipo",
+   "classe": "polipo"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0448",
+   "seed": 3866,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0448",
+   "seed": 4461,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0448",
+   "seed": 5015,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0448",
+   "seed": 5605,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0455",
+   "seed": 7433,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0456",
+   "seed": 191,
+   "categoria": "eritema",
+   "classe": "eritema"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0456",
+   "seed": 737,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0456",
+   "seed": 5120,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0456",
+   "seed": 10681,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0456",
+   "seed": 10683,
+   "categoria": "outra_patologia",
+   "classe": "outras"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0456",
+   "seed": 12674,
+   "categoria": "polipo",
+   "classe": "polipo"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0456",
+   "seed": 12746,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0468",
+   "seed": 5638,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0468",
+   "seed": 6043,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0468",
+   "seed": 6072,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0468",
+   "seed": 6555,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0469",
+   "seed": 1018,
+   "categoria": "eritema",
+   "classe": "eritema"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0469",
+   "seed": 1019,
+   "categoria": "eritema",
+   "classe": "eritema"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0469",
+   "seed": 2093,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0486",
+   "seed": 1065,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0486",
+   "seed": 3073,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0486",
+   "seed": 5011,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0486",
+   "seed": 7387,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0486",
+   "seed": 7473,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0490",
+   "seed": 1202,
+   "categoria": "eritema",
+   "classe": "eritema"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0490",
+   "seed": 7087,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0490",
+   "seed": 9402,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0490",
+   "seed": 9762,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0490",
+   "seed": 11326,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0491",
+   "seed": 8576,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0491",
+   "seed": 8626,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0491",
+   "seed": 8763,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0509",
+   "seed": 3669,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0509",
+   "seed": 5573,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0509",
+   "seed": 6624,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0509",
+   "seed": 8812,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0509",
+   "seed": 9494,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0517",
+   "seed": 2022,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0517",
+   "seed": 2968,
+   "categoria": "ulcera",
+   "classe": "ulcera"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0517",
+   "seed": 3032,
+   "categoria": "ulcera",
+   "classe": "ulcera"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0517",
+   "seed": 3071,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0517",
+   "seed": 3170,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0517",
+   "seed": 3187,
+   "categoria": "ulcera",
+   "classe": "ulcera"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0527",
+   "seed": 3537,
+   "categoria": "eritema",
+   "classe": "eritema"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0527",
+   "seed": 6412,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0527",
+   "seed": 6470,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0527",
+   "seed": 6655,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0527",
+   "seed": 6775,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0527",
+   "seed": 6791,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0529",
+   "seed": 520,
+   "categoria": "eritema",
+   "classe": "eritema"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0529",
+   "seed": 527,
+   "categoria": "eritema",
+   "classe": "eritema"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0529",
+   "seed": 1000,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0532",
+   "seed": 2237,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0532",
+   "seed": 3103,
+   "categoria": "xantelasma",
+   "classe": "xantelasma"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0533",
+   "seed": 464,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0533",
+   "seed": 3519,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0533",
+   "seed": 3765,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0533",
+   "seed": 3826,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0533",
+   "seed": 6767,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0533",
+   "seed": 7663,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0533",
+   "seed": 8472,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0533",
+   "seed": 9236,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0533",
+   "seed": 9465,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0533",
+   "seed": 9705,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0537",
+   "seed": 1500,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0537",
+   "seed": 1796,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0537",
+   "seed": 3801,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0537",
+   "seed": 4073,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0538",
+   "seed": 225,
+   "categoria": "eritema",
+   "classe": "eritema"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0538",
+   "seed": 9331,
+   "categoria": "eritema",
+   "classe": "eritema"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0538",
+   "seed": 11805,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0538",
+   "seed": 14845,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0543",
+   "seed": 8659,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0543",
+   "seed": 10109,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0543",
+   "seed": 10144,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0543",
+   "seed": 10576,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0543",
+   "seed": 13171,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0558",
+   "seed": 690,
+   "categoria": "polipo",
+   "classe": "polipo"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0558",
+   "seed": 1093,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0558",
+   "seed": 1364,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0558",
+   "seed": 1743,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0558",
+   "seed": 2650,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0558",
+   "seed": 8655,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0559",
+   "seed": 3794,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0559",
+   "seed": 5577,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0559",
+   "seed": 5886,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0559",
+   "seed": 6314,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0559",
+   "seed": 6508,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0559",
+   "seed": 8346,
+   "categoria": "ulcera",
+   "classe": "ulcera"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0563",
+   "seed": 490,
+   "categoria": "subepitelial",
+   "classe": "outras"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0563",
+   "seed": 494,
+   "categoria": "subepitelial",
+   "classe": "outras"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0563",
+   "seed": 536,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0571",
+   "seed": 807,
+   "categoria": "ulcera",
+   "classe": "ulcera"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0575",
+   "seed": 578,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0575",
+   "seed": 726,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0575",
+   "seed": 3282,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0575",
+   "seed": 4381,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0586",
+   "seed": 6966,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0586",
+   "seed": 7775,
+   "categoria": "ulcera",
+   "classe": "ulcera"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0586",
+   "seed": 10871,
+   "categoria": "ulcera",
+   "classe": "ulcera"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0586",
+   "seed": 13255,
+   "categoria": "ulcera",
+   "classe": "ulcera"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0586",
+   "seed": 13321,
+   "categoria": "ulcera",
+   "classe": "ulcera"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0595",
+   "seed": 549,
+   "categoria": "eritema",
+   "classe": "eritema"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0595",
+   "seed": 2133,
+   "categoria": "outra_patologia",
+   "classe": "outras"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0595",
+   "seed": 4047,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0595",
+   "seed": 5372,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0595",
+   "seed": 5592,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0595",
+   "seed": 6010,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0595",
+   "seed": 6169,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0595",
+   "seed": 6247,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0599",
+   "seed": 4832,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0599",
+   "seed": 4906,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0599",
+   "seed": 5150,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0599",
+   "seed": 5207,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0599",
+   "seed": 5227,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0599",
+   "seed": 5236,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0606",
+   "seed": 892,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0606",
+   "seed": 1587,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0606",
+   "seed": 1856,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0606",
+   "seed": 6362,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0606",
+   "seed": 7918,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0606",
+   "seed": 12385,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0607",
+   "seed": 7231,
+   "categoria": "eritema",
+   "classe": "eritema"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0613",
+   "seed": 2053,
+   "categoria": "xantelasma",
+   "classe": "xantelasma"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0613",
+   "seed": 4331,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0613",
+   "seed": 10110,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0625",
+   "seed": 554,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0625",
+   "seed": 560,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0625",
+   "seed": 721,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0625",
+   "seed": 1227,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0625",
+   "seed": 1857,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0625",
+   "seed": 4132,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0625",
+   "seed": 4937,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0625",
+   "seed": 4962,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0626",
+   "seed": 10380,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0626",
+   "seed": 10564,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0626",
+   "seed": 11157,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0626",
+   "seed": 11507,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0626",
+   "seed": 11963,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0626",
+   "seed": 14218,
+   "categoria": "outra_patologia",
+   "classe": "outras"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0626",
+   "seed": 14436,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0631",
+   "seed": 630,
+   "categoria": "eritema",
+   "classe": "eritema"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0631",
+   "seed": 812,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0631",
+   "seed": 2255,
+   "categoria": "eritema",
+   "classe": "eritema"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0634",
+   "seed": 1335,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0634",
+   "seed": 2193,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0634",
+   "seed": 4006,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0634",
+   "seed": 4630,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0634",
+   "seed": 5657,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0637",
+   "seed": 2788,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0637",
+   "seed": 2908,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0637",
+   "seed": 4616,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0637",
+   "seed": 8484,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0649",
+   "seed": 1170,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0649",
+   "seed": 7740,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0649",
+   "seed": 8079,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0649",
+   "seed": 8698,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0649",
+   "seed": 8727,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0651",
+   "seed": 600,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0651",
+   "seed": 1526,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0651",
+   "seed": 1808,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0651",
+   "seed": 2724,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0662",
+   "seed": 140,
+   "categoria": "eritema",
+   "classe": "eritema"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0662",
+   "seed": 5932,
+   "categoria": "sangue",
+   "classe": "outras"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0664",
+   "seed": 1237,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0664",
+   "seed": 4265,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0664",
+   "seed": 6722,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0665",
+   "seed": 1247,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0665",
+   "seed": 1349,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0665",
+   "seed": 1395,
+   "categoria": "ulcera",
+   "classe": "ulcera"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0665",
+   "seed": 1932,
+   "categoria": "erosao",
+   "classe": "erosao"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0665",
+   "seed": 3398,
+   "categoria": "ulcera",
+   "classe": "ulcera"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0665",
+   "seed": 4811,
+   "categoria": "ulcera",
+   "classe": "ulcera"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0667",
+   "seed": 727,
+   "categoria": "ulcera",
+   "classe": "ulcera"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0667",
+   "seed": 872,
+   "categoria": "ulcera",
+   "classe": "ulcera"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0667",
+   "seed": 3872,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0667",
+   "seed": 4026,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0667",
+   "seed": 4764,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0667",
+   "seed": 10103,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0671",
+   "seed": 2559,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0671",
+   "seed": 2926,
+   "categoria": "angiectasia",
+   "classe": "angiectasia"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0671",
+   "seed": 4841,
+   "categoria": "eritema",
+   "classe": "eritema"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0672",
+   "seed": 3848,
+   "categoria": "ulcera",
+   "classe": "ulcera"
+  }
+ ]
+}

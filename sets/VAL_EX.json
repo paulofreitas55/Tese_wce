@@ -1,0 +1,250 @@
+{
+ "nome": "VAL_EX",
+ "versao": 1,
+ "criado": "2026-10-07",
+ "semente": 0,
+ "regra": "semente 0; só janelas de lesão com caixa no seed; cada nova vai para a classe com menos janelas até aí (empates sorteados), janela sorteada dentro da classe; no máximo uma janela por grupo de sobreposição e nenhum grupo já usado; fora: folhas de contacto, as 30 anotadas antes, excluídas e janelas do mesmo grupo",
+ "n": 30,
+ "janelas": [
+  {
+   "split": "Dataset_Teste",
+   "caso": "0432",
+   "seed": 5681,
+   "categoria": "linfangiectasia",
+   "classe": "outras",
+   "origem": "reanotada"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0025",
+   "seed": 2136,
+   "categoria": "xantelasma",
+   "classe": "xantelasma",
+   "origem": "reanotada"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0069",
+   "seed": 2383,
+   "categoria": "eritema",
+   "classe": "eritema",
+   "origem": "reanotada"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0101",
+   "seed": 6137,
+   "categoria": "xantelasma",
+   "classe": "xantelasma",
+   "origem": "reanotada"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0287",
+   "seed": 941,
+   "categoria": "polipo",
+   "classe": "polipo",
+   "origem": "reanotada"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0558",
+   "seed": 690,
+   "categoria": "polipo",
+   "classe": "polipo",
+   "origem": "reanotada"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0152",
+   "seed": 875,
+   "categoria": "polipo",
+   "classe": "polipo",
+   "origem": "reanotada"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0050",
+   "seed": 649,
+   "categoria": "ulcera",
+   "classe": "ulcera",
+   "origem": "reanotada"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0595",
+   "seed": 4047,
+   "categoria": "angiectasia",
+   "classe": "angiectasia",
+   "origem": "nova"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0599",
+   "seed": 5236,
+   "categoria": "erosao",
+   "classe": "erosao",
+   "origem": "nova"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0318",
+   "seed": 2501,
+   "categoria": "linfangiectasia",
+   "classe": "outras",
+   "origem": "nova"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0575",
+   "seed": 4381,
+   "categoria": "angiectasia",
+   "classe": "angiectasia",
+   "origem": "nova"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0126",
+   "seed": 10991,
+   "categoria": "erosao",
+   "classe": "erosao",
+   "origem": "nova"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0631",
+   "seed": 2255,
+   "categoria": "eritema",
+   "classe": "eritema",
+   "origem": "nova"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0559",
+   "seed": 8346,
+   "categoria": "ulcera",
+   "classe": "ulcera",
+   "origem": "nova"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0456",
+   "seed": 191,
+   "categoria": "eritema",
+   "classe": "eritema",
+   "origem": "nova"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0543",
+   "seed": 8659,
+   "categoria": "erosao",
+   "classe": "erosao",
+   "origem": "nova"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0613",
+   "seed": 2053,
+   "categoria": "xantelasma",
+   "classe": "xantelasma",
+   "origem": "nova"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0243",
+   "seed": 5576,
+   "categoria": "angiectasia",
+   "classe": "angiectasia",
+   "origem": "nova"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0246",
+   "seed": 5225,
+   "categoria": "ulcera",
+   "classe": "ulcera",
+   "origem": "nova"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0662",
+   "seed": 5932,
+   "categoria": "sangue",
+   "classe": "outras",
+   "origem": "nova"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0529",
+   "seed": 520,
+   "categoria": "eritema",
+   "classe": "eritema",
+   "origem": "nova"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0076",
+   "seed": 6182,
+   "categoria": "angiectasia",
+   "classe": "angiectasia",
+   "origem": "nova"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0456",
+   "seed": 12674,
+   "categoria": "polipo",
+   "classe": "polipo",
+   "origem": "nova"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0302",
+   "seed": 5533,
+   "categoria": "erosao",
+   "classe": "erosao",
+   "origem": "nova"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0385",
+   "seed": 4240,
+   "categoria": "linfangiectasia",
+   "classe": "outras",
+   "origem": "nova"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0424",
+   "seed": 7821,
+   "categoria": "ulcera",
+   "classe": "ulcera",
+   "origem": "nova"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0302",
+   "seed": 4561,
+   "categoria": "xantelasma",
+   "classe": "xantelasma",
+   "origem": "nova"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0599",
+   "seed": 4832,
+   "categoria": "erosao",
+   "classe": "erosao",
+   "origem": "nova"
+  },
+  {
+   "split": "Dataset_Teste",
+   "caso": "0441",
+   "seed": 5578,
+   "categoria": "xantelasma",
+   "classe": "xantelasma",
+   "origem": "nova"
+  }
+ ]
+}

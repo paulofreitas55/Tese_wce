@@ -1,0 +1,38 @@
+# Parâmetros do protocolo de avaliação (Guião A, secção 5), lidos por eval/evaluate.py.
+# Fixam-se na Etapa 0 e não mudam depois de o protocolo ser aprovado: qualquer alteração exige
+# nova versão deste ficheiro, registada no protocolo (o sha256 deste ficheiro fica em cada resultado).
+versao: 1
+
+caminhos:
+  anotacoes: data/derived/annotations_v1.csv          # frames e caixas do médico de cada janela (box_*)
+  janelas: data/derived/janelas_v1.csv                # categoria de cada janela
+  referencia_pf: data/derived/paulo_frame_labels.csv  # anotação PF v2 consolidada (passo 0.7)
+  conjuntos: sets                                     # sets/CAL.json, sets/VAL_EX.json, sets/TEST_BOX.json
+  saida: outputs/eval
+  registo_testes: outputs/test_runs.csv
+  versao_dataset: docs/DATASET_VERSION.txt
+
+# referencia: pf = anotação do Paulo (presença: P, R, F1, AP); caixas = caixas do médico da própria
+# janela (R_box, R_loc, IoU; sem precisão, porque um frame sem caixa não é negativo)
+conjuntos:
+  CAL:      {split: Dataset_Treino, referencia: [pf, caixas], calibracao: true,  execucao_unica: false}
+  VAL_EX:   {split: Dataset_Teste,  referencia: [pf],         calibracao: false, execucao_unica: true}
+  TEST_BOX: {split: Dataset_Teste,  referencia: [caixas],     calibracao: false, execucao_unica: true}
+
+limiar:
+  grelha: {inicio: 0.0, fim: 1.0, passo: 0.02}    # τ_pres; presença prevista = score ≥ τ
+  a_min: [0, 25, 100]                              # px²; só usado se as previsões tiverem area_px
+  recall_op_r90: 0.90                              # OP-R90 = maior τ com recall micro ≥ 0,90 em CAL
+
+iou:
+  loc: 0.3              # R_loc@0,3, métrica principal de TEST-BOX
+  limiares: [0.3, 0.5]  # % de frames com IoU ≥ 0,3 e ≥ 0,5 (entre os frames com as duas caixas)
+
+bootstrap: {reamostragens: 1000, semente: 0, nivel: 0.95}   # reamostragem de janelas com reposição
+
+estratos:
+  classes_principais: [angiectasia, erosao, ulcera, polipo, eritema, xantelasma]   # as restantes: outras
+  distancia: [[1, 3], [4, 6], [7, 12], [13, 100]]      # |offset| ao seed; o seed (0) está sempre excluído
+  tercis_area_seed: [0.0096, 0.0282]                    # fração do frame (passo 0.5): pequena < 0,96 % ≤ média < 2,82 % ≤ grande
+
+fp_aparentes: {amostra: 50, semente: 0}                # amostra para a inspeção manual de A7 (em OP-F1)

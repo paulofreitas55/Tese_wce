@@ -1,0 +1,6 @@
+Dataset WCE — versão congelada (passo 0.1)
+data: 05/10/2026
+ficheiros: 1037985 · tamanho total: 16.40 GB
+sha256 do conteúdo (sha256 das linhas 'caminho<TAB>sha256', por ordem de caminho): 8ffdf8044e771295b94b24c6802c754e1215861c81a667906383f90da2d435aa
+sha256 da lista de ficheiros (caminho + tamanho, versão anterior): c4a4f3624e7572726d30873317e0a763324ed91c0c5f602895d7d3acae38a591  outputs/hash_dataset.txt
+manifesto por ficheiro: data/derived/manifest_sha256.csv

@@ -1,0 +1,3 @@
+# Fins de linha: LF no repositório e no disco, em qualquer sistema
+# (evita que os scripts .sh deixem de funcionar se alguém clonar no Windows)
+* text=auto eol=lf

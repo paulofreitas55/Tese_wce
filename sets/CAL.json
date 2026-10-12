@@ -1,0 +1,250 @@
+{
+ "nome": "CAL",
+ "versao": 1,
+ "criado": "2026-10-07",
+ "semente": 0,
+ "regra": "semente 0; só janelas de lesão com caixa no seed; cada nova vai para a classe com menos janelas até aí (empates sorteados), janela sorteada dentro da classe; no máximo uma janela por grupo de sobreposição e nenhum grupo já usado; fora: folhas de contacto, as 30 anotadas antes, excluídas e janelas do mesmo grupo",
+ "n": 30,
+ "janelas": [
+  {
+   "split": "Dataset_Treino",
+   "caso": "0024",
+   "seed": 1039,
+   "categoria": "angiectasia",
+   "classe": "angiectasia",
+   "origem": "reanotada"
+  },
+  {
+   "split": "Dataset_Treino",
+   "caso": "0638",
+   "seed": 4902,
+   "categoria": "ulcera",
+   "classe": "ulcera",
+   "origem": "reanotada"
+  },
+  {
+   "split": "Dataset_Treino",
+   "caso": "0515",
+   "seed": 1079,
+   "categoria": "angiectasia",
+   "classe": "angiectasia",
+   "origem": "reanotada"
+  },
+  {
+   "split": "Dataset_Treino",
+   "caso": "0554",
+   "seed": 1143,
+   "categoria": "angiectasia",
+   "classe": "angiectasia",
+   "origem": "reanotada"
+  },
+  {
+   "split": "Dataset_Treino",
+   "caso": "0037",
+   "seed": 8110,
+   "categoria": "angiectasia",
+   "classe": "angiectasia",
+   "origem": "reanotada"
+  },
+  {
+   "split": "Dataset_Treino",
+   "caso": "0022",
+   "seed": 1518,
+   "categoria": "angiectasia",
+   "classe": "angiectasia",
+   "origem": "reanotada"
+  },
+  {
+   "split": "Dataset_Treino",
+   "caso": "0412",
+   "seed": 585,
+   "categoria": "angiectasia",
+   "classe": "angiectasia",
+   "origem": "reanotada"
+  },
+  {
+   "split": "Dataset_Treino",
+   "caso": "0204",
+   "seed": 4774,
+   "categoria": "polipo",
+   "classe": "polipo",
+   "origem": "reanotada"
+  },
+  {
+   "split": "Dataset_Treino",
+   "caso": "0654",
+   "seed": 8208,
+   "categoria": "xantelasma",
+   "classe": "xantelasma",
+   "origem": "reanotada"
+  },
+  {
+   "split": "Dataset_Treino",
+   "caso": "0252",
+   "seed": 6540,
+   "categoria": "polipo",
+   "classe": "polipo",
+   "origem": "reanotada"
+  },
+  {
+   "split": "Dataset_Treino",
+   "caso": "0330",
+   "seed": 703,
+   "categoria": "angiectasia",
+   "classe": "angiectasia",
+   "origem": "reanotada"
+  },
+  {
+   "split": "Dataset_Treino",
+   "caso": "0011",
+   "seed": 5136,
+   "categoria": "angiectasia",
+   "classe": "angiectasia",
+   "origem": "reanotada"
+  },
+  {
+   "split": "Dataset_Treino",
+   "caso": "0173",
+   "seed": 5628,
+   "categoria": "erosao",
+   "classe": "erosao",
+   "origem": "reanotada"
+  },
+  {
+   "split": "Dataset_Treino",
+   "caso": "0137",
+   "seed": 16122,
+   "categoria": "erosao",
+   "classe": "erosao",
+   "origem": "reanotada"
+  },
+  {
+   "split": "Dataset_Treino",
+   "caso": "0429",
+   "seed": 1508,
+   "categoria": "outra_patologia",
+   "classe": "outras",
+   "origem": "nova"
+  },
+  {
+   "split": "Dataset_Treino",
+   "caso": "0402",
+   "seed": 3541,
+   "categoria": "eritema",
+   "classe": "eritema",
+   "origem": "nova"
+  },
+  {
+   "split": "Dataset_Treino",
+   "caso": "0429",
+   "seed": 815,
+   "categoria": "outra_patologia",
+   "classe": "outras",
+   "origem": "nova"
+  },
+  {
+   "split": "Dataset_Treino",
+   "caso": "0633",
+   "seed": 4694,
+   "categoria": "eritema",
+   "classe": "eritema",
+   "origem": "nova"
+  },
+  {
+   "split": "Dataset_Treino",
+   "caso": "0653",
+   "seed": 3303,
+   "categoria": "xantelasma",
+   "classe": "xantelasma",
+   "origem": "nova"
+  },
+  {
+   "split": "Dataset_Treino",
+   "caso": "0475",
+   "seed": 2966,
+   "categoria": "ulcera",
+   "classe": "ulcera",
+   "origem": "nova"
+  },
+  {
+   "split": "Dataset_Treino",
+   "caso": "0333",
+   "seed": 4743,
+   "categoria": "ulcera",
+   "classe": "ulcera",
+   "origem": "nova"
+  },
+  {
+   "split": "Dataset_Treino",
+   "caso": "0187",
+   "seed": 1121,
+   "categoria": "polipo",
+   "classe": "polipo",
+   "origem": "nova"
+  },
+  {
+   "split": "Dataset_Treino",
+   "caso": "0652",
+   "seed": 1440,
+   "categoria": "xantelasma",
+   "classe": "xantelasma",
+   "origem": "nova"
+  },
+  {
+   "split": "Dataset_Treino",
+   "caso": "0231",
+   "seed": 4353,
+   "categoria": "linfangiectasia",
+   "classe": "outras",
+   "origem": "nova"
+  },
+  {
+   "split": "Dataset_Treino",
+   "caso": "0200",
+   "seed": 234,
+   "categoria": "eritema",
+   "classe": "eritema",
+   "origem": "nova"
+  },
+  {
+   "split": "Dataset_Treino",
+   "caso": "0666",
+   "seed": 1746,
+   "categoria": "erosao",
+   "classe": "erosao",
+   "origem": "nova"
+  },
+  {
+   "split": "Dataset_Treino",
+   "caso": "0429",
+   "seed": 2145,
+   "categoria": "outra_patologia",
+   "classe": "outras",
+   "origem": "nova"
+  },
+  {
+   "split": "Dataset_Treino",
+   "caso": "0670",
+   "seed": 3471,
+   "categoria": "eritema",
+   "classe": "eritema",
+   "origem": "nova"
+  },
+  {
+   "split": "Dataset_Treino",
+   "caso": "0346",
+   "seed": 2470,
+   "categoria": "erosao",
+   "classe": "erosao",
+   "origem": "nova"
+  },
+  {
+   "split": "Dataset_Treino",
+   "caso": "0305",
+   "seed": 9126,
+   "categoria": "polipo",
+   "classe": "polipo",
+   "origem": "nova"
+  }
+ ]
+}
