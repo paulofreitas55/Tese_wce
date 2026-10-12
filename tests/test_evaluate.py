@@ -3,6 +3,7 @@ Testes do avaliador único (passo 0.8). Correm de duas maneiras, a partir da pas
     python tests/test_evaluate.py          (não precisa de pytest)
     python -m pytest tests/test_evaluate.py -q
 Usam só janelas inventadas, com resultados contados à mão; nunca leem dados reais.
+Versão 1.1 (12 out 2026): +2 testes (o avaliar recusa CAL; execuções de teste exigem o código guardado no git).
 """
 import json
 import math
@@ -480,6 +481,75 @@ def test_referencia_incompleta_e_recusada():
         js = ev.ler_conjunto(raiz / "sets/CAL.json")
         erro(ev.carregar_referencia, cfg, "CAL", js, contem="não cobre 2 frames")
         erro(ev.carregar_referencia, cfg, "VAL_EX", js, contem="só pode ter janelas de Dataset_Teste")
+
+
+# ------------------------------------------------------------------ versão 1.1 (12 out 2026)
+def test_avaliar_recusa_o_conjunto_de_calibracao():
+    """O avaliar em CAL gravaria por cima da calibração (perdia a grelha e o F1 por janela): é recusado."""
+    try:
+        import yaml  # noqa: F401
+    except ImportError:
+        saltar("PyYAML não instalado")
+    with tempfile.TemporaryDirectory() as tmp:
+        raiz, conj, pred = _projeto(tmp)
+        cfgp = str(raiz / "configs/avaliacao.yaml")
+        pc = pred("M1_CAL", conj["CAL"], {1, 2})
+        assert ev.main(["calibrar", "--metodo", "M1", "--pred", pc, "--config", cfgp]) == 0
+        f = raiz / "outputs/eval/CAL/M1.json"
+        antes = f.read_bytes()
+        assert ev.main(["avaliar", "--metodo", "M1", "--conjunto", "CAL", "--pred", pc, "--config", cfgp]) == 2
+        assert f.read_bytes() == antes and "calibracao" in json.loads(antes)
+
+
+def _git(pasta, *a):
+    import subprocess
+    r = subprocess.run(["git", "-C", str(pasta), "-c", "user.name=Teste", "-c", "user.email=teste@exemplo.invalid",
+                        "-c", "core.hooksPath=/dev/null", "-c", "commit.gpgsign=false", *a],
+                       capture_output=True, text=True)
+    assert r.returncode == 0, r.stderr
+    return r.stdout.strip()
+
+
+def test_execucao_de_teste_exige_o_codigo_guardado_no_git():
+    """Cada resultado regista o commit e se havia alterações por guardar. Em VAL_EX e TEST_BOX, com alterações
+    por guardar, a execução é recusada e nada fica registado; em CAL só avisa."""
+    import shutil
+    try:
+        import yaml  # noqa: F401
+    except ImportError:
+        saltar("PyYAML não instalado")
+    if shutil.which("git") is None:
+        saltar("git não instalado")
+    with tempfile.TemporaryDirectory() as tmp:
+        raiz, conj, pred = _projeto(tmp)
+        (raiz / ".gitignore").write_text("outputs/\npred_*.csv\n", encoding="utf-8")
+        (raiz / "methods").mkdir()
+        (raiz / "methods/metodo.py").write_text("# versão 1\n", encoding="utf-8")
+        _git(raiz, "init", "-q")
+        _git(raiz, "add", "-A")
+        _git(raiz, "commit", "-q", "-m", "inicial")
+        cfgp = str(raiz / "configs/avaliacao.yaml")
+        corre = lambda *a: ev.main(list(a) + ["--config", cfgp])          # noqa: E731
+        # tudo guardado: o registo tem o commit e diz que não havia alterações por guardar
+        assert corre("calibrar", "--metodo", "M1", "--pred", pred("M1_CAL", conj["CAL"], {1, 2})) == 0
+        reg = json.loads((raiz / "outputs/eval/CAL/M1.json").read_text())["registo"]
+        assert reg["commit"] == _git(raiz, "rev-parse", "--short", "HEAD") and reg["alteracoes_por_guardar"] is False
+        # código alterado e não guardado: em CAL avisa; em VAL_EX recusa e não regista nada
+        (raiz / "methods/metodo.py").write_text("# versão 2\n", encoding="utf-8")
+        assert corre("calibrar", "--metodo", "M1", "--pred", pred("M1_CAL", conj["CAL"], {1, 2})) == 0
+        cal = json.loads((raiz / "outputs/eval/CAL/M1.json").read_text())
+        assert cal["registo"]["alteracoes_por_guardar"] is True
+        assert any("alterações por guardar" in a for a in cal["avisos"])
+        pv = pred("M1_VAL", conj["VAL_EX"], {1, 2, 3})
+        assert corre("avaliar", "--metodo", "M1", "--conjunto", "VAL_EX", "--pred", pv) == 2
+        assert not (raiz / "outputs/test_runs.csv").exists() and not (raiz / "outputs/eval/VAL_EX/M1.json").exists()
+        # depois do commit, corre, e o registo aponta para o commit novo
+        _git(raiz, "commit", "-q", "-am", "versão 2")
+        novo = _git(raiz, "rev-parse", "--short", "HEAD")
+        assert corre("avaliar", "--metodo", "M1", "--conjunto", "VAL_EX", "--pred", pv) == 0
+        val = json.loads((raiz / "outputs/eval/VAL_EX/M1.json").read_text())
+        assert val["registo"]["commit"] == novo and val["registo"]["alteracoes_por_guardar"] is False
+        assert pd.read_csv(raiz / "outputs/test_runs.csv", dtype=str)["commit"].tolist() == [novo]
 
 
 # ------------------------------------------------------------------ correr sem pytest

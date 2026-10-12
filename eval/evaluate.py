@@ -11,6 +11,7 @@ Três comandos:
   avaliar   VAL_EX ou TEST_BOX, com os pontos de operação calibrados em CAL (outputs/eval/CAL/<método>.json).
             Cada método corre UMA vez em cada conjunto de teste: a execução fica em outputs/test_runs.csv e
             uma segunda é recusada, a não ser com --repetir "<motivo>" (o motivo fica registado).
+            CAL não: o calibrar já avalia CAL nos dois pontos, e o avaliar gravaria por cima da calibração.
   comparar  Diferença pareada por janela entre dois métodos já avaliados no mesmo conjunto: média e IC 95 %
             por bootstrap; "diferentes" quando o IC exclui 0.
 
@@ -36,12 +37,18 @@ IC 95 % por bootstrap sobre janelas (1 000 reamostragens, semente 0).
 Convenções por janela: P indefinida sem previsões; R indefinida sem positivos; F1 = 1 quando não há
 positivos nem previsões (nada a encontrar, nada previsto). As médias macro usam as janelas definidas.
 
+Git: cada resultado regista o commit e se havia alterações por guardar. Em VAL_EX e TEST_BOX, com
+alterações por guardar, a execução é recusada e nada fica registado (faz commit primeiro); em CAL só avisa.
+
 Uso (a partir da pasta do projeto):
   python eval/evaluate.py calibrar --metodo B1 --pred outputs/preds/pred_B1_CAL.csv
   python eval/evaluate.py avaliar  --metodo B1 --conjunto VAL_EX --pred outputs/preds/pred_B1_VAL_EX.csv
   python eval/evaluate.py comparar --conjunto VAL_EX --a SAM2 --b B1
 Parâmetros em configs/avaliacao.yaml. Resultados em outputs/eval/<conjunto>/<método>.json e numa tabela
 longa, outputs/eval/resultados.csv (a base da tabela mestre).
+
+Versões: 1.0 (6 out 2026) · 1.1 (12 out 2026): o avaliar recusa o conjunto de calibração (CAL); registo do
+estado do git; execuções em VAL_EX e TEST_BOX exigem o código guardado no git.
 """
 import argparse
 import datetime
@@ -56,7 +63,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-VERSAO = "1.0"
+VERSAO = "1.1"
 K3 = ["split", "caso", "seed"]
 CAIXA = ["box_x1", "box_y1", "box_x2", "box_y2"]
 REF = ["rx1", "ry1", "rx2", "ry2"]
@@ -700,7 +707,38 @@ def fp_aparentes(d, op, cfg):
 
 
 # ============================================================================ linha de comandos
-def _proveniencia(cfg, args, fich_conjunto, t0, usa_pf):
+def _estado_git(pasta):
+    """Commit atual e alterações por guardar no repositório git que contém a pasta (a da configuração).
+    Sem git (ex.: os testes, em pastas temporárias), commit e alteracoes_por_guardar ficam None."""
+    vazio = {"commit": None, "alteracoes_por_guardar": None, "ficheiros_alterados": []}
+    try:
+        r = subprocess.run(["git", "-C", str(pasta), "rev-parse", "--short", "HEAD"],
+                           capture_output=True, text=True, timeout=10)
+        if r.returncode != 0 or not r.stdout.strip():
+            return vazio
+        s = subprocess.run(["git", "-C", str(pasta), "status", "--porcelain"],
+                           capture_output=True, text=True, timeout=60)
+    except (OSError, subprocess.SubprocessError):
+        return vazio
+    if s.returncode != 0:
+        return {**vazio, "commit": r.stdout.strip()}
+    alterados = [linha[3:] for linha in s.stdout.splitlines() if linha.strip()]
+    return {"commit": r.stdout.strip(), "alteracoes_por_guardar": bool(alterados), "ficheiros_alterados": alterados[:20]}
+
+
+def _avisos_git(git):
+    if git["commit"] is None:
+        return ["não consegui ler o estado do git (pasta sem repositório?): o commit não fica registado"]
+    if git["alteracoes_por_guardar"] is None:
+        return [f"não consegui ver se há alterações por guardar no git (commit {git['commit']})"]
+    if git["alteracoes_por_guardar"]:
+        ex = ", ".join(git["ficheiros_alterados"][:3])
+        return [f"há alterações por guardar no git (ex.: {ex}): o commit registado ({git['commit']}) "
+                "não inclui o código que correu"]
+    return []
+
+
+def _proveniencia(cfg, args, fich_conjunto, t0, usa_pf, git):
     cam = cfg["caminhos"]
     refs = [cam["anotacoes"]] + ([cam["referencia_pf"]] if usa_pf else [])
     vd = Path(cam.get("versao_dataset", ""))
@@ -709,18 +747,15 @@ def _proveniencia(cfg, args, fich_conjunto, t0, usa_pf):
         for linha in vd.read_text(encoding="utf-8").splitlines():
             if "sha256 do conteúdo" in linha:
                 versao = linha.split()[-1]
-    try:
-        commit = subprocess.run(["git", "rev-parse", "--short", "HEAD"], capture_output=True, text=True,
-                                timeout=5).stdout.strip() or None
-    except (OSError, subprocess.SubprocessError):
-        commit = None
     return {"data": datetime.datetime.now().isoformat(timespec="seconds"), "duracao_s": round(time.time() - t0, 1),
             "versao_avaliador": VERSAO, "avaliador_sha256": _sha256(__file__),
             "config": str(args.config), "config_sha256": _sha256(args.config),
             "previsoes": str(args.pred), "previsoes_sha256": _sha256(args.pred),
             "conjunto": str(fich_conjunto), "conjunto_sha256": _sha256(fich_conjunto),
             "referencias_sha256": {str(f): _sha256(f) for f in refs},
-            "versao_dataset": versao, "commit": commit, "python": platform.python_version(),
+            "versao_dataset": versao, "commit": git["commit"],
+            "alteracoes_por_guardar": git["alteracoes_por_guardar"], "ficheiros_alterados": git["ficheiros_alterados"],
+            "python": platform.python_version(),
             "numpy": np.__version__, "pandas": pd.__version__,
             "bootstrap": cfg["bootstrap"]}
 
@@ -794,9 +829,11 @@ def _preparar(args, cfg, conjunto):
 def cmd_calibrar(args):
     t0 = time.time()
     cfg = ler_config(args.config)
+    git = _estado_git(Path(args.config).resolve().parent)
     conf, fich, d, info, avisos = _preparar(args, cfg, "CAL")
     if not conf.get("calibracao"):
         raise ErroAvaliacao("A configuração não permite calibrar em CAL.")
+    avisos += _avisos_git(git)
     ops, T = calibrar_ops(d, cfg)
     res = {"metodo": args.metodo, "conjunto": "CAL"}
     res.update(avaliar(d, info, cfg, ops, True, "caixas" in conf["referencia"], avisos))
@@ -805,7 +842,7 @@ def cmd_calibrar(args):
                          "F1_por_janela_em_OP_F1": {"media": _f(f1.mean()), "desvio_padrao": _f(f1.std(ddof=1)) if len(f1) > 1 else None,
                                                      "mediana": _f(np.median(f1)), "iqr": [_f(np.percentile(f1, 25)), _f(np.percentile(f1, 75))],
                                                      "min": _f(f1.min()), "max": _f(f1.max())}}
-    res["registo"] = _proveniencia(cfg, args, fich, t0, True)
+    res["registo"] = _proveniencia(cfg, args, fich, t0, True, git)
     saida = Path(cfg["caminhos"]["saida"]) / "CAL" / f"{args.metodo}.json"
     _gravar_json(saida, res)
     _atualizar_resultados(cfg, _limpo(res))
@@ -821,6 +858,15 @@ def cmd_avaliar(args):
     if conj not in cfg["conjuntos"]:
         raise ErroAvaliacao(f"Conjunto desconhecido: {conj}.")
     conf = cfg["conjuntos"][conj]
+    if conf.get("calibracao"):
+        raise ErroAvaliacao(f"{conj} é o conjunto de calibração: usa o comando calibrar, que já avalia {conj} nos dois "
+                            f"pontos de operação. O avaliar gravaria por cima da calibração ({conj}/{args.metodo}.json).")
+    git = _estado_git(Path(args.config).resolve().parent)
+    if conf.get("execucao_unica") and git["alteracoes_por_guardar"]:
+        ex = ", ".join(git["ficheiros_alterados"][:5])
+        raise ErroAvaliacao(f"Há alterações por guardar no git (ex.: {ex}). Uma execução em {conj} conta para a tese e "
+                            "tem de ficar ligada a um commit com o código que correu. Guarda primeiro "
+                            "(git add -A && git commit -m \"...\") e volta a correr. Nada foi registado.")
     reg = Path(cfg["caminhos"]["registo_testes"])
     if conf.get("execucao_unica") and reg.exists():
         r = pd.read_csv(reg, dtype=str, keep_default_na=False)
@@ -841,11 +887,12 @@ def cmd_avaliar(args):
     ops = {k: {"tau": v["tau"], "a_min": v.get("a_min", 0), "regra": v.get("regra", ""), "origem": origem}
            for k, v in cal["pontos_operacao"].items()}
     conf, fich, d, info, avisos = _preparar(args, cfg, conj)
+    avisos += _avisos_git(git)
     if cal.get("registo", {}).get("config_sha256") not in (None, _sha256(args.config)):
         avisos.append("a configuração (configs/avaliacao.yaml) mudou desde a calibração em CAL")
     res = {"metodo": args.metodo, "conjunto": conj}
     res.update(avaliar(d, info, cfg, ops, "pf" in conf["referencia"], "caixas" in conf["referencia"], avisos))
-    res["registo"] = _proveniencia(cfg, args, fich, t0, "pf" in conf["referencia"])
+    res["registo"] = _proveniencia(cfg, args, fich, t0, "pf" in conf["referencia"], git)
     if args.repetir:
         res["registo"]["motivo_repeticao"] = args.repetir
     saida = Path(cfg["caminhos"]["saida"]) / conj / f"{args.metodo}.json"
@@ -899,7 +946,7 @@ def main(argv=None):
         s.add_argument("--config", default="configs/avaliacao.yaml")
         s.add_argument("--conjunto-ficheiro", help="ficheiro do conjunto em vez de sets/<conjunto>.json")
         if nome == "avaliar":
-            s.add_argument("--conjunto", required=True, choices=["VAL_EX", "TEST_BOX", "CAL"])
+            s.add_argument("--conjunto", required=True, help="VAL_EX ou TEST_BOX (CAL avalia-se com o calibrar)")
             s.add_argument("--op", help="calibração em CAL (por omissão outputs/eval/CAL/<método>.json)")
             s.add_argument("--repetir", help="motivo para repetir uma avaliação de teste (fica registado)")
     s = sub.add_parser("comparar")
