@@ -8,7 +8,7 @@ Vetores (configs/b1.yaml): um .pt por frame em <pasta>/<split>/<caso>/GT_com_cla
 cada um um dict com várias versões do vetor do frame (cls, mean, max, std, ...). Calcula todas as versões pedidas
 numa só passagem (cada ficheiro é lido uma vez) e grava um CSV por versão; o método chama-se B1_<emb>_<chave>.
   endofm   EndoFM v2 (vectors_v2)
-  dinov2   DINOv2 ViT-B/14 (próximo passo: os vetores são extraídos para a mesma estrutura)
+  dinov2   DINOv2 ViT-B/14, extraído antes por methods/extrair_dinov2.py para a mesma estrutura
 
 Uso, a partir da pasta do projeto:
     python methods/b1_global.py --emb endofm --conjunto CAL              (as versões de configs/b1.yaml)
@@ -31,7 +31,7 @@ RAIZ = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(RAIZ / "eval"))
 import evaluate as ev  # noqa: E402
 
-VERSAO = "2.0"
+VERSAO = "2.1"
 CONJUNTOS = ("CAL", "VAL_EX", "TEST_BOX")
 
 
@@ -167,7 +167,7 @@ def resumo(prev, fr, sem_vetor, sem_seed, negativos, args, vet, t0):
 
 def main(argv=None):
     a = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    a.add_argument("--emb", required=True, choices=["endofm"], help="vetores a usar (dinov2: próximo passo)")
+    a.add_argument("--emb", required=True, choices=["endofm", "dinov2"], help="vetores a usar (configs/b1.yaml)")
     a.add_argument("--conjunto", required=True, choices=CONJUNTOS)
     a.add_argument("--chaves", help="versões separadas por vírgulas (por omissão, as de configs/b1.yaml)")
     a.add_argument("--config", default="configs/avaliacao.yaml", help="caminhos dos conjuntos e de annotations_v1")
