@@ -1,0 +1,15 @@
+# B1 — semelhança global (Guião A, A1), lido por methods/b1_global.py.
+# score de cada frame = max(0, cos(vetor do seed, vetor do frame)), sem reescalar; não usa caixas nem rótulos.
+# Escolha da versão do vetor (decidida a 13 out 2026, antes de ver resultados): para cada modelo, comparam-se em
+# CAL as versões abaixo e fica a de maior AP em CAL (em empate, a cls, o padrão do modelo). Só a escolhida segue
+# para VAL-EX e TEST-BOX; as de CAL são todas reportadas.
+versao: 2
+
+vetores:
+  endofm:
+    # EndoFM v2: um .pt por frame em <pasta>/<split>/<caso>/GT_com_classes/<seed>/<caso>_<frame>_<seed>.pt,
+    # cada um um dict com cls · mean · max · std · mean_all (768 números cada)
+    pasta: /mnt/paulo/tese_2026/data/processed/vectors_v2
+    chaves: [cls, mean, max, std]   # mean_all fica de fora: média ao longo do tempo, sem equivalente no DINOv2
+
+saida: outputs/preds    # pred_B1_<emb>_<chave>_<CONJUNTO>.csv e pred_B1_<emb>_<CONJUNTO>_resumo.txt
