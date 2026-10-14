@@ -1,21 +1,28 @@
-# B1 — semelhança global (Guião A, A1), lido por methods/b1_global.py.
+# B1 — semelhança global (Guião A, A1), lido por methods/b1_global.py, methods/extrair_endofm.py e methods/extrair_dinov2.py.
 # score de cada frame = max(0, cos(vetor do seed, vetor do frame)), sem reescalar; não usa caixas nem rótulos.
-# Escolha da versão do vetor (decidida a 13 out 2026, antes de ver resultados): para cada modelo, comparam-se em
-# CAL as versões abaixo e fica a de maior AP em CAL (em empate, a cls, o padrão do modelo). Só a escolhida segue
-# para VAL-EX e TEST-BOX; as de CAL são todas reportadas.
-versao: 2
+# Versão do vetor (decidida a 14 out 2026): só a cls, o resumo oficial dos dois modelos, como no guião e no protocolo
+# (para calcular também as outras em CAL: --chaves cls,mean,max,std).
+# Caminhos relativos à pasta do projeto (como em avaliacao.yaml); data/ e ml_models/ ficam fora do git.
+versao: 4
 
 vetores:
   endofm:
-    # EndoFM v2: um .pt por frame em <pasta>/<split>/<caso>/GT_com_classes/<seed>/<caso>_<frame>_<seed>.pt,
-    # cada um um dict com cls · mean · max · std · mean_all (768 números cada)
-    pasta: /mnt/paulo/tese_2026/data/processed/vectors_v2
-    chaves: [cls, mean, max, std]   # mean_all fica de fora: média ao longo do tempo, sem equivalente no DINOv2
+    # EndoFM-LV, extraído por methods/extrair_endofm.py (refeito a 14 out 2026) para a estrutura
+    # <pasta>/<split>/<caso>/GT_com_classes/<seed>/<caso>_<frame>_<seed>.pt, cada um um dict com
+    # cls (token CLS do clip de 8 frames, f−4 a f+3) · mean · max · std (dos 196 quadrados do próprio frame).
+    # Substitui os vectors_v2 da extração antiga (dois erros; ver docs/decisoes.md, 14 out), que deixam de ser usados.
+    pasta: data/processed/vectors_endofm_v3
+    chaves: [cls]
+    repo: ml_models/EndoFM-LV                                   # código do modelo (models/timesformer.py)
+    checkpoint: ml_models/EndoFM-LV/checkpoints/endo_fm.pth
+    frames: 8                       # frames por clip, como no treino do modelo
+    lado: 224                       # 320×320 → 224×224 (bilinear), normalização ImageNet, como no pré-treino
+    lote: 8                         # clips por passagem na GPU (8 × 8 imagens); mais lento, mais folga de memória
   dinov2:
     # DINOv2 ViT-B/14, extraído por methods/extrair_dinov2.py para a mesma estrutura de pastas e ficheiros:
     # cls (token CLS) · mean · max · std (dos 256 vetores dos quadrados de 14×14 px)
-    pasta: /mnt/paulo/tese_2026/data/processed/vectors_dinov2_vitb14
-    chaves: [cls, mean, max, std]
+    pasta: data/processed/vectors_dinov2_vitb14
+    chaves: [cls]       # o extrator grava também mean · max · std
     modelo: dinov2_vitb14           # torch.hub, facebookresearch/dinov2
     lado: 224                       # resolução padrão do modelo: 320×320 → 224×224 (bicúbica), normalização ImageNet
     lote: 64                        # imagens por passagem na GPU

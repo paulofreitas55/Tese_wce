@@ -7,8 +7,8 @@ cada janela, de annotations_v1.csv). É o controlo: o método final tem de o sup
 Vetores (configs/b1.yaml): um .pt por frame em <pasta>/<split>/<caso>/GT_com_classes/<seed>/<caso>_<frame>_<seed>.pt,
 cada um um dict com várias versões do vetor do frame (cls, mean, max, std, ...). Calcula todas as versões pedidas
 numa só passagem (cada ficheiro é lido uma vez) e grava um CSV por versão; o método chama-se B1_<emb>_<chave>.
-  endofm   EndoFM v2 (vectors_v2)
-  dinov2   DINOv2 ViT-B/14, extraído antes por methods/extrair_dinov2.py para a mesma estrutura
+  endofm   EndoFM-LV, extraído antes por methods/extrair_endofm.py (clips de 8 frames)
+  dinov2   DINOv2 ViT-B/14, extraído antes por methods/extrair_dinov2.py
 
 Uso, a partir da pasta do projeto:
     python methods/b1_global.py --emb endofm --conjunto CAL              (as versões de configs/b1.yaml)
@@ -16,7 +16,7 @@ Uso, a partir da pasta do projeto:
 Gera em outputs/preds/: pred_B1_<emb>_<chave>_<CONJUNTO>.csv (split, caso, seed, frame, score), no formato do
 avaliador, e pred_B1_<emb>_<CONJUNTO>_resumo.txt (contagens, distribuição dos scores, proveniência).
 Depois, para cada versão: python eval/evaluate.py calibrar --metodo B1_<emb>_<chave> --pred <csv de CAL>
-Regra de escolha (configs/b1.yaml): maior AP em CAL; em empate, cls. VAL_EX e TEST_BOX só no A7.
+Versão usada (configs/b1.yaml, decidida a 14 out): só a cls. VAL_EX e TEST_BOX só no A7.
 """
 import argparse
 import datetime
@@ -31,7 +31,7 @@ RAIZ = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(RAIZ / "eval"))
 import evaluate as ev  # noqa: E402
 
-VERSAO = "2.1"
+VERSAO = "2.2"
 CONJUNTOS = ("CAL", "VAL_EX", "TEST_BOX")
 
 
