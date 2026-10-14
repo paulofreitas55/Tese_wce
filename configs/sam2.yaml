@@ -1,0 +1,13 @@
+# A4 — SAM 2 (Guião A), lido por methods/sam2_prop.py. Propaga a caixa do seed pela janela, para a frente e para trás
+# (cada direção com o estado limpo). Score = sigmoide do score de objeto; caixa = maior componente da máscara;
+# area_px = área da máscara. Caminhos relativos à pasta do projeto; ml_models/ e outputs/ ficam fora do git.
+versao: 1
+repo: ml_models/sam2                                            # clone de github.com/facebookresearch/sam2
+checkpoint: ml_models/sam2/checkpoints/sam2.1_hiera_base_plus.pt
+modelo_cfg: configs/sam2.1/sam2.1_hiera_b+.yaml                 # config do modelo dentro do pacote sam2
+l_max: [12, 29, 100]            # frames para cada lado; uma variante por valor (o protocolo começa em 12; comparam-se em CAL)
+offload_video_to_cpu: true      # os frames ficam na memória do processador (poupa a GPU)
+offload_state_to_cpu: false     # pôr a true se faltar memória na GPU (mais lento)
+partes: outputs/preds/sam2_partes   # um CSV por janela, para a retoma
+mascaras: outputs/masks             # máscaras em RLE, uma por janela
+saida: outputs/preds
