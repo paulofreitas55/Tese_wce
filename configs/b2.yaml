@@ -1,0 +1,14 @@
+# B2 — semelhança local com DINOv2 (Guião A, A2), lido por methods/b2_local.py.
+# Compara cada frame com a região da caixa do seed: mapa S(i,j) = max_k cos(quadrado_ij, protótipo_k), em que os
+# protótipos são os quadrados do seed com o centro dentro da caixa do seed.
+# Variantes do guião e do protocolo: bruto = max(S); corrigido = max(S) − mediana(S).
+# Testes que o guião pede, só para comparar em CAL: bruto_top4 (média dos 4 maiores), bruto_media e corrigido_media
+# (com o protótipo médio). Scores cortados a [0, 1], sem reescalar, como no B1.
+# Caminhos relativos à pasta do projeto.
+versao: 1
+modelo: dinov2_vitb14               # torch.hub, facebookresearch/dinov2 (o mesmo do B1, já na cache; sem fine-tune)
+lado: 448                           # 320×320 → 448×448 (bicúbica) → grelha 32×32 de quadrados de 14 px (≈ 10 px do frame)
+lote: 16                            # imagens por passagem na GPU (a 448 px cada imagem pesa ~4× mais do que a 224)
+limiar_caixa: 0.9                   # caixa prevista: quadrados com S ≥ 0,9·max(S) ligados ao máximo
+partes: outputs/preds/b2_partes     # um ficheiro por janela, para a retoma
+saida: outputs/preds
