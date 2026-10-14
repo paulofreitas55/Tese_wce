@@ -106,13 +106,13 @@ class _PreditorFalso:
 
     def add_new_points_or_box(self, inference_state, frame_idx, obj_id, box=None, points=None, labels=None):
         assert (points is None) == (labels is None) and (box is not None or points is not None)
-        self.prompts.append({"box": None if box is None else [float(v) for v in box],
+        self.prompts.append({"frame": frame_idx, "box": None if box is None else [float(v) for v in box],
                              "points": None if points is None else np.asarray(points, dtype=float).tolist(),
                              "labels": None if labels is None else np.asarray(labels).tolist()})
         if box is None:
             cx, cy = (float(v) for v in np.asarray(points, dtype=float).reshape(-1)[:2])
             box = (cx - 32, cy - 32, cx + 32, cy + 32)
-        inference_state["caixa"] = (frame_idx, [float(v) for v in box])
+        inference_state.setdefault("caixa", (frame_idx, [float(v) for v in box]))   # o 1.º prompt é o do seed
         inference_state["output_dict_per_obj"][0]["cond_frame_outputs"][frame_idx] = {
             "object_score_logits": self.torch.tensor([[5.0]])}
 
@@ -120,6 +120,7 @@ class _PreditorFalso:
         torch = self.torch
         i0, (x1, y1, x2, y2) = estado["caixa"]
         assert start_frame_idx == i0 and not estado["output_dict_per_obj"][0]["non_cond_frame_outputs"]
+        cond = estado["output_dict_per_obj"][0]["cond_frame_outputs"]
         self.direcoes.append("antes" if reverse else "depois")
         n, h, w = estado["num_frames"], estado["video_height"], estado["video_width"]
         if reverse:
@@ -131,8 +132,8 @@ class _PreditorFalso:
             m = torch.full((1, 1, h, w), -10.0)
             if abs(d) <= 6:
                 m[0, 0, int(y1):int(y2), int(x1) + 2 * d:int(x2) + 2 * d] = 10.0
-            if fi != i0:
-                estado["output_dict_per_obj"][0]["non_cond_frame_outputs"][fi] = {
+            if fi not in cond:                                              # como no SAM 2: frames com prompt
+                estado["output_dict_per_obj"][0]["non_cond_frame_outputs"][fi] = {   # ficam com a saída do prompt
                     "object_score_logits": torch.tensor([[4.0 - abs(d)]])}
             yield fi, [1], m
 
@@ -184,7 +185,7 @@ def test_sam2_ponta_a_ponta():
         t = s2.main(base + ["--max-janelas", "1"], modelo=modelo)
         assert t["feitas"] == 1 and not t["csv"] and t["resumo"].name == "sam2_teste_CAL_resumo.txt"
         assert modelo.p.direcoes == ["depois", "antes"]
-        assert modelo.p.prompts == [{"box": [96.0, 96.0, 160.0, 160.0], "points": None, "labels": None}] * 2
+        assert modelo.p.prompts == [{"frame": 10, "box": [96.0, 96.0, 160.0, 160.0], "points": None, "labels": None}] * 2
         assert (raiz / "partes/CAL/configuracao.txt").read_text(encoding="utf-8").strip().endswith("prompt caixa")
         # corrida completa: a janela do teste é aproveitada
         r = s2.main(base, modelo=modelo)
@@ -239,6 +240,38 @@ def test_sam2_prompts_ponto_e_ponto_caixa():
             assert ev.main(["calibrar", "--metodo", f"{nome}_L3", "--pred", str(r["csv"][3]), "--config", cfg]) == 0
         # a base (caixa) fica intacta: nem partes nem CSV com o nome dela
         assert not (raiz / "partes").exists() and not (raiz / "outputs/preds/pred_SAM2_L3_CAL.csv").exists()
+
+
+def test_sam2_multi_prompt_v5():
+    torch = _requisitos()
+    s2 = _carregar()
+    with tempfile.TemporaryDirectory() as tmp:
+        raiz = _mini_projeto(tmp)
+        cfg = str(raiz / "configs/avaliacao.yaml")
+        base = ["--ds", str(raiz / "DS"), "--config", cfg, "--config-sam2", str(raiz / "configs/sam2.yaml"),
+                "--sem-progresso", "--prompt", "multi"]
+        try:                                                                # em TEST_BOX as caixas seriam a resposta
+            s2.main(["--conjunto", "TEST_BOX"] + base, modelo=_ModeloFalso(torch))
+            raise AssertionError("devia ter parado")
+        except ev.ErroAvaliacao as e:
+            assert "só corre em CAL e VAL_EX" in str(e)
+        # caixas do médico no mini-projeto: −2 a +2 (o −8 é sem_ficheiro); o seed não conta como vizinho
+        viz = s2.caixas_vizinhas(ev.ler_config(cfg), [("Dataset_Treino", "0101", 500)])
+        assert viz == {("Dataset_Treino", "0101", 500): {f: (0.3, 0.3, 0.5, 0.5) for f in (498, 499, 501, 502)}}
+        modelo = _ModeloFalso(torch)
+        r = s2.main(["--conjunto", "CAL"] + base, modelo=modelo)
+        assert r["feitas"] == 3 and len(modelo.p.prompts) == 30            # 3 janelas × 2 passagens × (seed + 4)
+        assert [p["frame"] for p in modelo.p.prompts[:5]] == [10, 8, 9, 11, 12]    # o seed primeiro
+        assert all(p["box"] == [96.0, 96.0, 160.0, 160.0] and p["points"] is None for p in modelo.p.prompts[:10])
+        p3 = pd.read_csv(r["csv"][3], dtype={"caso": str})
+        assert r["csv"][3].name == "pred_SAM2_multi_L3_CAL.csv" and len(p3) == 59
+        j = p3[p3["caso"] == "0101"].set_index("frame")
+        for f in (498, 499, 501, 502):                                      # frames com prompt: score do prompt
+            assert abs(j.loc[f, "score"] - 1 / (1 + math.exp(-5))) < 1e-6
+        assert abs(j.loc[503, "score"] - 1 / (1 + math.exp(-1))) < 1e-6    # a 3 frames do seed, sem prompt
+        texto = r["resumo"].read_text(encoding="utf-8")
+        assert "limite superior" in texto and "12 no total" in texto
+        assert ev.main(["calibrar", "--metodo", "SAM2_multi_L3", "--pred", str(r["csv"][3]), "--config", cfg]) == 0
 
 
 if __name__ == "__main__":

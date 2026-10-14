@@ -1,13 +1,17 @@
 #!/usr/bin/env python3
 """
 A4/A5 — Propagação com SAM 2 (Guião A). Dá ao SAM 2 o prompt do seed e deixa-o seguir a lesão pela janela, com a
-memória dos frames anteriores. Usa só a caixa do próprio seed (a entrada do método); as caixas dos outros frames nunca
-são lidas.
+memória dos frames anteriores. Usa só a caixa do próprio seed (a entrada do método); as caixas dos outros frames não
+são lidas, exceto no V5.
 
-Prompt no seed (--prompt):
+Prompt (--prompt):
   caixa         a caixa do seed (método base: SAM2_L<L>)
   ponto         V1: um ponto positivo no centro da caixa (SAM2_ponto_L<L>)
   ponto_caixa   V2: a caixa e o ponto do centro (SAM2_ponto_caixa_L<L>)
+  multi         V5: a caixa do seed e, como prompts noutros frames, todas as caixas originais dos vizinhos na janela
+                (box_src medico_vizinho, válidas, em frames com imagem) (SAM2_multi_L<L>). Usa parte da referência
+                como entrada: é só um limite superior (quanto melhoraria com mais anotação) e só corre em CAL e VAL_EX
+                (em TEST_BOX as caixas seriam a própria resposta). As métricas de caixas em CAL não contam.
 
 Para cada janela (frames pela ordem numérica de annotations_v1.csv):
   1. Cria uma pasta temporária com ligações 0.jpg, 1.jpg, … para as imagens da janela (o SAM 2 lê frames numerados);
@@ -30,9 +34,10 @@ aviso é silenciado e fica uma linha no resumo.
 Uso, a partir da pasta do projeto, depois do source …/inicio.sh:
     python methods/sam2_prop.py --conjunto CAL --ds "$DS" --max-janelas 1     (teste: só a 1.ª janela)
     python methods/sam2_prop.py --conjunto CAL --ds "$DS"                     (caixa)
-    python methods/sam2_prop.py --conjunto CAL --ds "$DS" --prompt ponto      (V1; ponto_caixa para o V2)
-Gera em outputs/preds/: pred_<NOME>_L<L>_<CONJUNTO>.csv (NOME = SAM2, SAM2_ponto ou SAM2_ponto_caixa; colunas split,
-caso, seed, frame, score, box_x1 … box_y2, area_px), no formato do avaliador, e pred_<NOME>_<CONJUNTO>_resumo.txt.
+    python methods/sam2_prop.py --conjunto CAL --ds "$DS" --prompt ponto      (V1; ponto_caixa para o V2; multi, V5)
+Gera em outputs/preds/: pred_<NOME>_L<L>_<CONJUNTO>.csv (NOME = SAM2, SAM2_ponto, SAM2_ponto_caixa ou SAM2_multi;
+colunas split, caso, seed, frame, score, box_x1 … box_y2, area_px), no formato do avaliador, e
+pred_<NOME>_<CONJUNTO>_resumo.txt.
 Depois, por variante:
     python eval/evaluate.py calibrar --metodo SAM2_L<L> --pred outputs/preds/pred_SAM2_L<L>_CAL.csv
 VAL_EX e TEST_BOX só no A7.
@@ -61,9 +66,11 @@ import evaluate as ev  # noqa: E402
 from b1_global import frames_das_janelas  # noqa: E402
 from b2_local import caixas_do_seed  # noqa: E402
 
-VERSAO = "1.1"
+VERSAO = "1.2"
 CAIXA = ["box_x1", "box_y1", "box_x2", "box_y2"]
-PROMPTS = {"caixa": "SAM2", "ponto": "SAM2_ponto", "ponto_caixa": "SAM2_ponto_caixa"}   # prompt → nome do método
+PROMPTS = {"caixa": "SAM2", "ponto": "SAM2_ponto", "ponto_caixa": "SAM2_ponto_caixa",   # prompt → nome do método
+           "multi": "SAM2_multi"}
+SO_SEM_REFERENCIA_DE_CAIXAS = ("CAL", "VAL_EX")                             # onde o V5 (multi) pode correr
 
 
 # ============================================================================ máscaras
@@ -115,7 +122,23 @@ def argumentos_prompt(caixa_px, prompt):
     caixa = {"box": np.array([x1, y1, x2, y2], dtype=np.float32)}
     ponto = {"points": np.array([[(x1 + x2) / 2, (y1 + y2) / 2]], dtype=np.float32),
              "labels": np.array([1], dtype=np.int32)}
-    return {"caixa": caixa, "ponto": ponto, "ponto_caixa": {**caixa, **ponto}}[prompt]
+    return {"caixa": caixa, "ponto": ponto, "ponto_caixa": {**caixa, **ponto}, "multi": caixa}[prompt]
+
+
+def caixas_vizinhas(cfg, janelas):
+    """V5: {(split, caso, seed): {frame: (x1, y1, x2, y2)}} em 0–1, com as caixas originais dos outros frames da janela
+    (box_src medico_vizinho), válidas pela regra do avaliador (4 coordenadas e x2 > x1, y2 > y1). As caixas copiadas de
+    janelas sobrepostas (boxc_*) não entram."""
+    alvo, casos, caixas = set(janelas), {k[1] for k in janelas}, {}
+    for b in pd.read_csv(cfg["caminhos"]["anotacoes"], dtype=str, keep_default_na=False,
+                         usecols=["split", "caso", "seed", "frame", "box_src"] + CAIXA, chunksize=200_000):
+        b = b[b["caso"].isin(casos) & (b["box_src"] == "medico_vizinho")]
+        for _, r in b.iterrows():
+            k = (r["split"], r["caso"], int(r["seed"]))
+            v = pd.to_numeric(pd.Series([r[c] for c in CAIXA]), errors="coerce")
+            if k in alvo and v.notna().all() and v[2] > v[0] and v[3] > v[1]:
+                caixas.setdefault(k, {})[int(r["frame"])] = tuple(float(x) for x in v)
+    return caixas
 
 
 # ============================================================================ modelo
@@ -186,8 +209,9 @@ def _logit_objeto(estado, frame_idx):
 
 
 # ============================================================================ janelas
-def processar_janela(modelo, cv2, imagens, i_seed, caixa, l_max, conf, prompt="caixa"):
-    """imagens: caminhos da janela por ordem numérica (sem buracos); i_seed: posição do seed. Devolve
+def processar_janela(modelo, cv2, imagens, i_seed, caixa, l_max, conf, prompt="caixa", vizinhas=None):
+    """imagens: caminhos da janela por ordem numérica (sem buracos); i_seed: posição do seed; vizinhas (só V5):
+    {índice: caixa 0–1} dadas como prompts noutros frames, nas duas passagens. Devolve
     ({índice: (distância, score, caixa, área)}, máscaras {índice: rle}, área da máscara do seed, tamanho)."""
     p = modelo.p
     with tempfile.TemporaryDirectory() as tmp:
@@ -203,6 +227,9 @@ def processar_janela(modelo, cv2, imagens, i_seed, caixa, l_max, conf, prompt="c
             for reverso in (False, True):
                 p.reset_state(estado)
                 p.add_new_points_or_box(inference_state=estado, frame_idx=i_seed, obj_id=1, **kw)
+                for i, (a1, b1, a2, b2) in sorted((vizinhas or {}).items()):   # V5: caixas dos vizinhos
+                    p.add_new_points_or_box(inference_state=estado, frame_idx=i, obj_id=1,
+                                            **argumentos_prompt((a1 * w, b1 * h, a2 * w, b2 * h), "caixa"))
                 for fi, _, logits in p.propagate_in_video(estado, start_frame_idx=i_seed,
                                                           max_frame_num_to_track=l_max, reverse=reverso):
                     m = (logits[0, 0] > 0).cpu().numpy()
@@ -218,7 +245,8 @@ def processar_janela(modelo, cv2, imagens, i_seed, caixa, l_max, conf, prompt="c
     return res, mascaras, area_seed, (h, w)
 
 
-def correr(fr, caixas, ds, partes, pasta_mascaras, modelo, conf, max_janelas=None, progresso=True, prompt="caixa"):
+def correr(fr, caixas, ds, partes, pasta_mascaras, modelo, conf, max_janelas=None, progresso=True, prompt="caixa",
+           vizinhas=None):
     import cv2
     l_max = max(int(x) for x in conf["l_max"])
     feitas = saltadas = calculados = 0
@@ -246,10 +274,15 @@ def correr(fr, caixas, ds, partes, pasta_mascaras, modelo, conf, max_janelas=Non
             if any(b - a != 1 for a, b in zip(frames, frames[1:])):
                 com_saltos.append(f"{sp}/{caso}/{seed}")                     # a propagação passa por cima do buraco
             i_seed = frames.index(int(seed))
+            viz = None
+            if vizinhas is not None:                                        # V5: só frames com imagem
+                pos = {f: i for i, f in enumerate(frames)}
+                viz = {pos[f]: cx for f, cx in vizinhas.get((sp, caso, seed), {}).items()
+                       if f in pos and f != int(seed)}
             t1 = time.time()
             res, mascaras, area_seed, (h, wd) = processar_janela(
                 modelo, cv2, [w / f"{caso}_{f}_{seed}.jpg" for f in frames], i_seed, caixas[(sp, caso, seed)],
-                l_max, conf, prompt)
+                l_max, conf, prompt, viz)
             t_modelo += time.time() - t1
             linhas = []
             for i, f in enumerate(frames):
@@ -260,6 +293,7 @@ def correr(fr, caixas, ds, partes, pasta_mascaras, modelo, conf, max_janelas=Non
                                "distancia": dist if dist is not None else -1, "score": score,
                                **{c: (v if cx else "") for c, v in zip(CAIXA, cx or ("",) * 4)}, "area_px": area})
             d = pd.DataFrame(linhas)
+            d["prompts_vizinhos"] = len(viz or {})
             d["area_seed_px"] = area_seed
             d["area_caixa_seed_px"] = round((caixas[(sp, caso, seed)][2] - caixas[(sp, caso, seed)][0])
                                             * (caixas[(sp, caso, seed)][3] - caixas[(sp, caso, seed)][1]) * h * wd)
@@ -308,10 +342,14 @@ def main(argv=None, modelo=None):
     a.add_argument("--config", default="configs/avaliacao.yaml")
     a.add_argument("--config-sam2", default="configs/sam2.yaml")
     a.add_argument("--prompt", default="caixa", choices=tuple(PROMPTS),
-                   help="prompt no seed: caixa (base), ponto (V1) ou ponto_caixa (V2)")
+                   help="caixa (base), ponto (V1), ponto_caixa (V2) ou multi (V5, só CAL e VAL_EX)")
     a.add_argument("--max-janelas", type=int, help="só as primeiras N janelas (teste); não junta os CSV finais")
     a.add_argument("--sem-progresso", action="store_true")
     args = a.parse_args(argv)
+    if args.prompt == "multi" and args.conjunto not in SO_SEM_REFERENCIA_DE_CAIXAS:
+        raise ev.ErroAvaliacao(f"O V5 (multi) usa as caixas dos vizinhos como entrada: só corre em "
+                               f"{' e '.join(SO_SEM_REFERENCIA_DE_CAIXAS)} (em {args.conjunto} seriam a própria "
+                               "resposta).")
     if not args.ds or not Path(args.ds).is_dir():
         raise ev.ErroAvaliacao('Falta a pasta do dataset: corre primeiro o source …/inicio.sh e usa --ds "$DS".')
     cfg = ev.ler_config(args.config)
@@ -329,8 +367,9 @@ def main(argv=None, modelo=None):
     modelo = modelo or ModeloSAM2(conf)
     if modelo.disp == "cuda":
         modelo.torch.cuda.reset_peak_memory_stats()
+    vizinhas = caixas_vizinhas(cfg, janelas) if args.prompt == "multi" else None
     r = correr(fr, caixas, Path(args.ds), partes, pasta_mascaras, modelo, conf, args.max_janelas,
-               not args.sem_progresso, args.prompt)
+               not args.sem_progresso, args.prompt, vizinhas)
     memoria = (f"{modelo.torch.cuda.max_memory_allocated() / 2 ** 30:.1f} GB" if modelo.disp == "cuda" else "—")
 
     grupos = sorted(set(janelas))[:args.max_janelas] if args.max_janelas else sorted(set(janelas))
@@ -389,6 +428,12 @@ def main(argv=None, modelo=None):
              for nome, lo, hi in (("1-3", 1, 3), ("4-6", 4, 6), ("7-12", 7, 12), (">12", 13, 10 ** 9))
              if (seguidos["distancia"].between(lo, hi)).any()),
          f"área da máscara (px, frames com máscara): {_percentis(area, (5, 50, 95))}"]
+    if args.prompt == "multi":
+        n_viz = por_janela["prompts_vizinhos"].to_numpy(dtype=int)
+        L += ["", f"V5: caixas dos vizinhos dadas como prompt: {n_viz.sum()} no total · por janela: mediana "
+                  f"{np.median(n_viz):g}, máximo {n_viz.max()} · janelas sem nenhuma: {(n_viz == 0).sum()}",
+              "É um limite superior (usa parte da referência como entrada). Em CAL, as métricas de caixas (R_box, "
+              "R_loc, mIoU) não contam: essas caixas são ao mesmo tempo a entrada e a referência."]
     if csv and args.conjunto == "CAL":
         L += ["", "Calibração, uma por variante de L_max (comparam-se em CAL):"]
         L += [f"  python eval/evaluate.py calibrar --metodo {nome}_L{lm} --pred {csv[lm]}" for lm in l_maxs]
