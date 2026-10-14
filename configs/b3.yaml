@@ -1,0 +1,7 @@
+# B3 — tracker clássico CSRT (Guião A, A3), lido por methods/b3_csrt.py.
+# Segue a caixa do seed para a frente e para trás; score = NCC entre o recorte do seed e o recorte atual, cortada a
+# [0, 1] (0 nos frames não seguidos); caixa = a do tracker. Caminhos relativos à pasta do projeto.
+versao: 1
+l_max: [12, 29, 100]    # frames seguidos para cada lado; uma variante por valor (o protocolo começa em 12; comparam-se em CAL)
+ncc_lado: 32            # os recortes do seed e do frame são reduzidos a 32×32 px antes da NCC
+saida: outputs/preds
