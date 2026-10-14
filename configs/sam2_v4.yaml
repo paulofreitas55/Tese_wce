@@ -1,0 +1,6 @@
+# A5 — V4: pós-processamento temporal das previsões do SAM 2 (methods/sam2_v4.py). Corre sobre os CSV já gravados.
+versao: 1
+bases: [SAM2_L12, SAM2_L29]   # pred_<base>_<CONJUNTO>.csv em `entrada`: a linha base (L12) e o V3 (L29)
+k: [3, 6]                     # remove as ilhas de 1 frame a mais de k frames do troço do seed
+entrada: outputs/preds
+saida: outputs/preds
