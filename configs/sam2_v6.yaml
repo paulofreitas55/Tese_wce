@@ -1,0 +1,7 @@
+# A5 — V6: paragem adaptativa do SAM 2 (methods/sam2_v6.py), acrescento ao plano (15 out). Corre sobre os CSV já gravados.
+versao: 1
+base: SAM2_L100     # pred_<base>_<CONJUNTO>.csv: o SAM 2 com a caixa, seguido até 100 frames
+limiar: 0.5         # abaixo disto, o próprio SAM 2 considera que o objeto não está visível
+n: [1, 3, 6]        # pára ao fim de n frames seguidos abaixo do limiar
+entrada: outputs/preds
+saida: outputs/preds
