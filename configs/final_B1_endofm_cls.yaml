@@ -1,0 +1,41 @@
+# Congelado no A6 (scripts/12_a6_congelar.py): não alterar depois da tag a6-congelado.
+metodo: B1_endofm_cls
+linha_tabela_mestre: B1 global EndoFM
+principal: false
+gerado_por:
+  script: methods/b1_global.py
+  script_sha256: 7a9012bd6c91cdeeeecafe13959347194d47653566c1a45e4bd0f05a47a61c7f
+  config: configs/b1.yaml
+  config_sha256: 4c785aa4efc6334dad7db7bdad5323eaa6539828da9b14b6f3bde9a7c0fdba54
+parametros:
+  emb: endofm
+  chave: cls
+pontos_operacao:
+  OP_F1:
+    tau: 0.98
+    a_min: 0.0
+    regra: 'máximo F1 micro em CAL (empates: menor A_min, depois maior τ)'
+  OP_R90:
+    tau: 0.8
+    a_min: 0.0
+    regra: maior τ com recall micro ≥ 0.90 em CAL
+calibracao:
+  ficheiro: outputs/eval/CAL/B1_endofm_cls.json
+  sha256: b7feeac8ddb6756597196d1ee1366f1f14070359bb9233708f5a8b820d2d060d
+  commit: c630ec3
+  previsoes_sha256: 9a0a1ae5c8f43241bdc617a047d67fc12322e70558cf62833f64ea9455ec2f54
+conjuntos_A7:
+- VAL_EX
+- TEST_BOX
+previsoes:
+  VAL_EX:
+    ficheiro: outputs/preds/pred_B1_endofm_cls_VAL_EX.csv
+    sha256: 2a5d519f38fab0c4172dfb913ba3179d4ac48beba152f0d600caf9d13e619c9c
+  TEST_BOX:
+    ficheiro: outputs/preds/pred_B1_endofm_cls_TEST_BOX.csv
+    sha256: 1ab0d53c598edc03a8b92d35eead1d19c114ca330f96d72b4013f410a173bd81
+congelado:
+  data: '2026-10-15T17:32:09'
+  script: 12_a6_congelar.py v1.0
+  commit: c562ac9
+  alteracoes_por_guardar: false

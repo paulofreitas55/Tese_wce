@@ -1,0 +1,40 @@
+# Congelado no A6 (scripts/12_a6_congelar.py): não alterar depois da tag a6-congelado.
+metodo: B2_corrigido_media
+linha_tabela_mestre: B2 local corrigido
+principal: false
+gerado_por:
+  script: methods/b2_local.py
+  script_sha256: 6c6bf01632972b4c0141c08ddaa221cde1b31a25e1bc6d28b1330758a19e8747
+  config: configs/b2.yaml
+  config_sha256: b4f9ad2366f8bf861628f3f46f6ce7e2db38dbebb202afb17aa40456292dc7cf
+parametros:
+  variante: corrigido_media
+pontos_operacao:
+  OP_F1:
+    tau: 0.38
+    a_min: 0.0
+    regra: 'máximo F1 micro em CAL (empates: menor A_min, depois maior τ)'
+  OP_R90:
+    tau: 0.26
+    a_min: 0.0
+    regra: maior τ com recall micro ≥ 0.90 em CAL
+calibracao:
+  ficheiro: outputs/eval/CAL/B2_corrigido_media.json
+  sha256: 479740ab8f17bd6948c8c0fd44bc41d02ea7b78325b95d01447fc91fc966704f
+  commit: 9b8c3ae
+  previsoes_sha256: 5aadef6ee44a4e8d8be8090d8452c8327d427759839bcd3326d69da69a1ca630
+conjuntos_A7:
+- VAL_EX
+- TEST_BOX
+previsoes:
+  VAL_EX:
+    ficheiro: outputs/preds/pred_B2_corrigido_media_VAL_EX.csv
+    sha256: c71e1703d9f779bcb4df13593f3a50e605239e106af0db134d40d88ee5a52e35
+  TEST_BOX:
+    ficheiro: outputs/preds/pred_B2_corrigido_media_TEST_BOX.csv
+    sha256: 3613ed67d9bebf4d7cc4701117ced4581f71ad4bb7a6df236c25506e7c6ad5d1
+congelado:
+  data: '2026-10-15T17:32:09'
+  script: 12_a6_congelar.py v1.0
+  commit: c562ac9
+  alteracoes_por_guardar: false
