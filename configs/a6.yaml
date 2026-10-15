@@ -1,0 +1,19 @@
+# A6 — congelamento antes do A7 (scripts/12_a6_congelar.py). As decisões estão em docs/decisoes.md.
+versao: 1
+principal: SAM2_L12                  # o melhor método (A8 e go/no-go)
+criterio2_op: OP_F1                  # decidido a 15 out
+nivel_media: null                    # null = sem nível "média"; ou o τ inferior da faixa [τ, τ do OP-F1)
+limites_media: [0.5, 0.6, 0.7, 0.8]  # τ inferiores mostrados na tabela do nível "média"
+janela_dominante: [Dataset_Treino, "0231", 4353]
+previsoes: outputs/preds
+conjuntos: [VAL_EX, TEST_BOX]        # por omissão
+metodos:                             # a lista do A7 (plano inicial, decidido a 15 out)
+  - {metodo: B1_endofm_cls, linha: "B1 global EndoFM", script: methods/b1_global.py, config: configs/b1.yaml, parametros: {emb: endofm, chave: cls}}
+  - {metodo: B1_dinov2_cls, linha: "B1 global DINOv2", script: methods/b1_global.py, config: configs/b1.yaml, parametros: {emb: dinov2, chave: cls}}
+  - {metodo: B2_bruto_media, linha: "B2 local bruto", script: methods/b2_local.py, config: configs/b2.yaml, parametros: {variante: bruto_media}}
+  - {metodo: B2_corrigido_media, linha: "B2 local corrigido", script: methods/b2_local.py, config: configs/b2.yaml, parametros: {variante: corrigido_media}}
+  - {metodo: B3_csrt_L12, linha: "B3 CSRT", script: methods/b3_csrt.py, config: configs/b3.yaml, parametros: {l_max: 12}}
+  - {metodo: SAM2_L12, linha: "SAM2 box", script: methods/sam2_prop.py, config: configs/sam2.yaml, parametros: {prompt: caixa, l_max: 12}}
+  - {metodo: SAM2_ponto_L12, linha: "SAM2 ponto", script: methods/sam2_prop.py, config: configs/sam2.yaml, parametros: {prompt: ponto, l_max: 12}}
+  - {metodo: SAM2_L29, linha: "SAM2 + V3/V4", script: methods/sam2_prop.py, config: configs/sam2.yaml, parametros: {prompt: caixa, l_max: 29, v4: nao}}
+  - {metodo: SAM2_multi_L12, linha: "SAM2 multi-prompt", script: methods/sam2_prop.py, config: configs/sam2.yaml, parametros: {prompt: multi, l_max: 12}, conjuntos: [VAL_EX]}
