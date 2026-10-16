@@ -1,0 +1,15 @@
+# A7 — o que mostrar nas tabelas e figuras (scripts/13_a7_tabelas.py) e na inspeção dos FP aparentes
+# (scripts/14_fp_inspecao.py). Não muda nenhum resultado: os métodos, os pontos de operação e as avaliações vêm do
+# A6 e do A7 (configs/a6.yaml e outputs/eval/), que estão congelados.
+versao: 1
+figuras:
+  metodos: [SAM2_L12, B3_csrt_L12, B2_bruto_media, B1_endofm_cls]   # até 4 (as 4 cores validadas); o principal primeiro
+go_no_go:                      # critérios do protocolo (Guião A, secção 5); a decisão está no docs/decisoes.md (15 out)
+  b1: B1_endofm_cls
+  r_loc_minimo: 0.70
+  precisao_minima: 0.60
+fp_inspecao:
+  metodo: SAM2_L12             # o principal: amostra de 50 FP aparentes em TEST_BOX, sorteada pelo avaliador
+  previsoes: outputs/preds/pred_SAM2_L12_TEST_BOX.csv
+  mascaras: outputs/masks/TEST_BOX
+  saida: outputs/14_fp_inspecao
