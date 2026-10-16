@@ -21,7 +21,9 @@ Grava em outputs/13_a7/:
   fp_classificacao.csv  as classes dos FP aparentes inspecionados (só quando a folha já tem classificações)
   fig_pr.png/.pdf       curvas PR da presença em CAL e em VAL-EX, com o OP-F1 marcado
   fig_distancia.png/.pdf  P e R em VAL-EX e R_loc@0,3 em TEST-BOX por distância ao seed, no OP-F1
-As figuras precisam do matplotlib; sem ele, as tabelas são gravadas na mesma.
+As figuras precisam do matplotlib; sem ele, as tabelas são gravadas na mesma. Na fig_distancia, os métodos sem
+caixas (B1) não entram no painel do R_loc: não é 0, não se aplica (fica uma nota no painel).
+Versões: 1.0 (15 out 2026) · 1.1 (16 out 2026): métodos sem caixas fora do painel do R_loc.
 
 Uso, a partir da pasta do projeto:
     python scripts/13_a7_tabelas.py
@@ -40,7 +42,7 @@ RAIZ = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(RAIZ / "eval"))
 import evaluate as ev  # noqa: E402
 
-VERSAO = "1.0"
+VERSAO = "1.1"
 OPS = ("OP_F1", "OP_R90")
 CLASSES_FP = ("lesao_nao_anotada", "outra_lesao", "fundo_mucosa", "nao_avaliavel")
 NOME_CONJ = {"CAL": "CAL", "VAL_EX": "VAL-EX", "TEST_BOX": "TEST-BOX"}
@@ -395,9 +397,13 @@ def figuras(res, metodos, nomes, saida):
         x = np.arange(len(cats))
         for ax, (conj, met, titulo) in zip(axs, paineis):
             _estilo(ax, fmt)
+            sem_caixas = []
             for i, m in enumerate(metodos):
                 r = res.get((m, conj))
                 if not r:
+                    continue
+                if met == "R_loc" and not r["por_op"]["OP_F1"].get("micro", {}).get("n_com_as_duas_caixas"):
+                    sem_caixas.append(nomes[m])                   # não dá caixas: o R_loc não se aplica (não é 0)
                     continue
                 bl = r["por_op"]["OP_F1"].get("estratos", {}).get("distancia", {})
                 v, lo, hi = (np.array([_vic(bl.get(k, {}).get(met))[c] for k in cats], dtype=float)
@@ -412,6 +418,9 @@ def figuras(res, metodos, nomes, saida):
             ax.set_ylim(0, 1.02)
             ax.set_title(titulo, fontsize=9, loc="left")
             ax.set_xlabel("Distância ao seed (frames)", fontsize=8.5)
+            if sem_caixas:
+                ax.annotate("sem caixas: " + ", ".join(sem_caixas), xy=(0.98, 0.97), xycoords="axes fraction",
+                            ha="right", va="top", fontsize=7, color=TINTA_2)
         legenda(fig)
         fig.tight_layout(rect=(0, 0.1, 1, 1))
         gravar(fig, "fig_distancia")
