@@ -13,3 +13,13 @@ fp_inspecao:
   previsoes: outputs/preds/pred_SAM2_L12_TEST_BOX.csv
   mascaras: outputs/masks/TEST_BOX
   saida: outputs/14_fp_inspecao
+exemplos:                      # exemplos qualitativos (scripts/16_a7_exemplos.py); o caso vai entre aspas (zeros à esquerda)
+  casos:                       # obrigatórios: Tabela 2 do diagnóstico (guião, A7) e o 0167 (lesões diferentes na mesma zona)
+    - ["0023", 2697]
+    - ["0190", 712]
+    - ["0218", 1897]
+    - "0167"                   # um caso sozinho: todas as janelas desse caso em ALL_SEEDBOX
+  offsets: [-12, -8, -4, -2, 0, 2, 4, 8, 12]   # 9 quadros, com o seed ao centro
+  previsoes: outputs/preds/pred_SAM2_L12_ALL_SEEDBOX.csv
+  mascaras: outputs/masks/ALL_SEEDBOX
+  saida: outputs/16_a7_exemplos

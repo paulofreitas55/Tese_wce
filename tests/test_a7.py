@@ -105,7 +105,8 @@ def test_a7_tabelas_ponta_a_ponta():
             assert (out / nome).is_file()
         try:
             import matplotlib  # noqa: F401
-            assert {p.name for p in r["figuras"]} == {"fig_pr.png", "fig_pr.pdf", "fig_distancia.png", "fig_distancia.pdf"}
+            assert {p.name for p in r["figuras"]} == {f"{n}.{e}" for n in ("fig_pr", "fig_distancia", "fig_classe_tamanho")
+                                                       for e in ("png", "pdf")}
         except ImportError:
             assert "falta o matplotlib" in r["texto"]
 
@@ -176,6 +177,71 @@ def test_a7_fp_inspecao_e_resumo():
             raise AssertionError("devia ter parado")
         except ev.ErroAvaliacao as e:
             assert "não é o ficheiro avaliado" in str(e)
+
+
+def test_a7_exemplos():
+    """16_a7_exemplos.py: obrigatórios (par e caso inteiro), nota dos FP, escolhas automáticas nas janelas de teste."""
+    try:
+        import cv2
+        import matplotlib  # noqa: F401
+        import yaml  # noqa: F401
+    except ImportError:
+        raise Saltar("falta o OpenCV, o matplotlib ou o PyYAML")
+    t16 = _carregar("ex", "16_a7_exemplos.py")
+    from sam2_prop import rle
+    with tempfile.TemporaryDirectory() as tmp:
+        raiz, conj, _ = _projeto(tmp)
+        todas = conj["CAL"] + conj["VAL_EX"]
+        (raiz / "sets/ALL_SEEDBOX.json").write_text(json.dumps(
+            {"nome": "ALL_SEEDBOX", "janelas": [{"split": s, "caso": c, "seed": e} for s, c, e, _ in todas]}))
+        (raiz / "configs/final_SAM2_L12.yaml").write_text(
+            "metodo: SAM2_L12\nparametros: {prompt: caixa, l_max: 12}\n"
+            "decisoes_A6: {niveis_A8: {alta: {score_minimo: 0.86}, media: null}}\n", encoding="utf-8")
+        certa, errada, linhas = (0.30, 0.30, 0.50, 0.50), (0.60, 0.60, 0.80, 0.80), []
+        for sp, caso, seed, _ in todas:                          # 0202 (erosão) com a caixa no sítio errado
+            for o in range(-10, 11):
+                if o:
+                    s, b = (0.95, errada if caso == "0202" else certa) if abs(o) <= 3 else (0.4, certa)
+                    linhas.append({"split": sp, "caso": caso, "seed": seed, "frame": seed + o, "score": s,
+                                   **dict(zip(["box_x1", "box_y1", "box_x2", "box_y2"], b)), "area_px": 300})
+        pred = raiz / "outputs/preds/pred_SAM2_L12_ALL_SEEDBOX.csv"
+        pred.parent.mkdir(parents=True)
+        pd.DataFrame(linhas).to_csv(pred, index=False)
+        ds, rng = raiz / "ds", np.random.default_rng(0)
+        for sp, caso, seed, _ in todas:
+            pasta = ds / sp / caso / "GT_com_classes" / str(seed)
+            pasta.mkdir(parents=True)
+            for f in range(seed - 10, seed + 11):
+                cv2.imwrite(str(pasta / f"{caso}_{f}_{seed}.jpg"), rng.integers(0, 255, (64, 80, 3), dtype=np.uint8))
+        mk = np.zeros((64, 80), dtype=bool)
+        mk[20:32, 24:40] = True
+        (raiz / "outputs/masks/ALL_SEEDBOX").mkdir(parents=True)
+        (raiz / "outputs/masks/ALL_SEEDBOX/Dataset_Teste__0201__600.json.gz").write_bytes(gzip.compress(json.dumps(
+            {"tamanho": [64, 80], "frames": {"601": rle(mk)}}).encode("utf-8")))
+        (raiz / "outputs/14_fp_inspecao").mkdir(parents=True)
+        pd.DataFrame([{"n": 1, "imagem": "x.png", "split": "Dataset_Teste", "caso": "0201", "seed": 600, "frame": 603,
+                       "offset": 3, "score": 0.95, "classificacao": "lesao_nao_anotada", "nota": " exemplo_bom"}]
+                     ).to_csv(raiz / "outputs/14_fp_inspecao/classificacao.csv", index=False)
+        a7 = raiz / "configs/a7.yaml"
+        a7.write_text(
+            f"fp_inspecao: {{saida: {raiz / 'outputs/14_fp_inspecao'}}}\n"
+            "exemplos:\n  casos: [[\"0201\", 600], [\"9999\", 1], \"0101\"]\n"
+            "  offsets: [-12, -8, -4, -2, 0, 2, 4, 8, 12]\n"
+            f"  previsoes: {pred}\n  mascaras: {raiz / 'outputs/masks/ALL_SEEDBOX'}\n"
+            f"  saida: {raiz / 'outputs/16_a7_exemplos'}\n", encoding="utf-8")
+
+        r = t16.main(["--ds", str(ds), "--config", str(raiz / "configs/avaliacao.yaml"), "--config-a7", str(a7),
+                      "--final", str(raiz / "configs/final_SAM2_L12.yaml")])
+        ind = r["indice"].set_index("caso")
+        assert list(r["indice"]["caso"]) == ["0201", "0101", "0202"] and r["fora"] == ["9999/1"]
+        assert ind.loc["0201", "motivos"] == "obrigatório · marcado nos FP · acerto"
+        assert ind.loc["0202", "motivos"] == "falha · falha em lesão plana"
+        assert ind.loc["0201", "R_loc_janela"] == 1.0 and ind.loc["0202", "R_loc_janela"] == 0.0
+        assert ind.loc["0101", "R_loc_janela"] == ""                       # treino: sem escolha automática
+        assert "+3" in ind.loc["0201", "offsets"] and "+2" not in ind.loc["0201", "offsets"]   # o frame do FP entra
+        for f in ind["ficheiro"]:
+            assert (raiz / "outputs/16_a7_exemplos" / f).is_file()
+            assert (raiz / "outputs/16_a7_exemplos" / f).with_suffix(".pdf").is_file()
 
 
 if __name__ == "__main__":

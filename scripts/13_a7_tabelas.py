@@ -21,9 +21,12 @@ Grava em outputs/13_a7/:
   fp_classificacao.csv  as classes dos FP aparentes inspecionados (só quando a folha já tem classificações)
   fig_pr.png/.pdf       curvas PR da presença em CAL e em VAL-EX, com o OP-F1 marcado
   fig_distancia.png/.pdf  P e R em VAL-EX e R_loc@0,3 em TEST-BOX por distância ao seed, no OP-F1
+  fig_classe_tamanho.png/.pdf  R_loc@0,3 em TEST-BOX por classe e por tamanho da caixa do seed, no OP-F1 (em VAL-EX
+                        há só 4 ou 5 janelas por classe: os IC não deixam ler nada, ficam só nas tabelas)
 As figuras precisam do matplotlib; sem ele, as tabelas são gravadas na mesma. Na fig_distancia, os métodos sem
 caixas (B1) não entram no painel do R_loc: não é 0, não se aplica (fica uma nota no painel).
-Versões: 1.0 (15 out 2026) · 1.1 (16 out 2026): métodos sem caixas fora do painel do R_loc.
+Versões: 1.0 (15 out 2026) · 1.1 (16 out 2026): métodos sem caixas fora do painel do R_loc · 1.2 (22 out 2026):
+fig_classe_tamanho, que a lista de saída do guião pede (figuras por distância, classe e tamanho).
 
 Uso, a partir da pasta do projeto:
     python scripts/13_a7_tabelas.py
@@ -42,7 +45,7 @@ RAIZ = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(RAIZ / "eval"))
 import evaluate as ev  # noqa: E402
 
-VERSAO = "1.1"
+VERSAO = "1.2"
 OPS = ("OP_F1", "OP_R90")
 CLASSES_FP = ("lesao_nao_anotada", "outra_lesao", "fundo_mucosa", "nao_avaliavel")
 NOME_CONJ = {"CAL": "CAL", "VAL_EX": "VAL-EX", "TEST_BOX": "TEST-BOX"}
@@ -334,9 +337,9 @@ def figuras(res, metodos, nomes, saida):
     fmt = FuncFormatter(lambda x, _: f"{x:.1f}".replace(".", ","))
     gravados = []
 
-    def legenda(fig, nota=None):
+    def legenda(fig, nota=None, quais=None):
         h = [Line2D([], [], color=CORES[i], marker=MARCAS[i], lw=1.6, ms=6, mec="white", mew=0.8, label=nomes[m])
-             for i, m in enumerate(metodos)]
+             for i, m in enumerate(metodos) if quais is None or m in quais]
         if nota:
             h.append(Line2D([], [], color="none", marker="o", ms=6, mfc=TINTA_2, mec="white", label=nota))
         fig.legend(handles=h, loc="lower center", ncol=len(h), frameon=False, fontsize=8.5, handlelength=2.4)
@@ -410,7 +413,8 @@ def figuras(res, metodos, nomes, saida):
                              for c in ("valor", "ic95_inf", "ic95_sup"))
                 dx = (i - (len(metodos) - 1) / 2) * 0.1
                 ok = np.isfinite(v)
-                err = np.vstack([np.where(np.isfinite(lo), v - lo, 0), np.where(np.isfinite(hi), hi - v, 0)])
+                err = np.clip(np.vstack([np.where(np.isfinite(lo), v - lo, 0), np.where(np.isfinite(hi), hi - v, 0)]),
+                              0, None)
                 ax.errorbar(x[ok] + dx, v[ok], yerr=err[:, ok], color=CORES[i], marker=MARCAS[i], ms=5, lw=1.4,
                             elinewidth=0.8, capsize=1.8, mec="white", mew=0.6, zorder=3)
             ax.set_xticks(x)
@@ -424,6 +428,49 @@ def figuras(res, metodos, nomes, saida):
         legenda(fig)
         fig.tight_layout(rect=(0, 0.1, 1, 1))
         gravar(fig, "fig_distancia")
+
+    # R_loc@0,3 (TEST-BOX) por classe e por tamanho da caixa do seed, no OP-F1, com IC 95 %; entre parênteses, o
+    # número de caixas do estrato. Só os métodos com caixas; as classes não têm ordem, por isso não se ligam os pontos.
+    com = [m for m in metodos if (res.get((m, "TEST_BOX")) or {}).get("por_op", {}).get("OP_F1", {})
+           .get("micro", {}).get("n_com_as_duas_caixas")]
+    sem = [nomes[m] for m in metodos if res.get((m, "TEST_BOX")) and m not in com]
+    ref = res.get((com[0], "TEST_BOX")) if com else None
+    if ref:
+        est = ref["por_op"]["OP_F1"].get("estratos", {})
+        classes = sorted(est.get("classe", {}), key=lambda k: (k == "outras", -(est["classe"][k].get("n_caixas") or 0)))
+        tamanhos = [t for t in ("pequena", "media", "grande") if t in est.get("tamanho", {})]
+        fig, axs = plt.subplots(1, 2, figsize=(7.2, 3.2), sharey=True,
+                                gridspec_kw={"width_ratios": [max(1, len(classes)), len(tamanhos) + 1]})
+        for ax, tipo, cats2, titulo, liga in ((axs[0], "classe", classes, "Por classe", False),
+                                             (axs[1], "tamanho", tamanhos, "Por tamanho da caixa do seed", True)):
+            _estilo(ax, fmt)
+            x2 = np.arange(len(cats2))
+            for i, m in enumerate(metodos):
+                if m not in com:
+                    continue
+                bl = res[(m, "TEST_BOX")]["por_op"]["OP_F1"].get("estratos", {}).get(tipo, {})
+                v, lo, hi = (np.array([_vic(bl.get(k, {}).get("R_loc"))[c] for k in cats2], dtype=float)
+                             for c in ("valor", "ic95_inf", "ic95_sup"))
+                dx = (com.index(m) - (len(com) - 1) / 2) * 0.16
+                ok = np.isfinite(v)
+                err = np.clip(np.vstack([np.where(np.isfinite(lo), v - lo, 0), np.where(np.isfinite(hi), hi - v, 0)]),
+                              0, None)
+                ax.errorbar(x2[ok] + dx, v[ok], yerr=err[:, ok], color=CORES[i], marker=MARCAS[i], ms=5,
+                            lw=1.4 if liga else 0, ls="-" if liga else "none", elinewidth=0.8, capsize=1.8,
+                            mec="white", mew=0.6, zorder=3)
+            ax.set_xticks(x2)
+            ax.set_xticklabels([f"{ROTULOS.get(k, k)}\n({_int(est[tipo][k].get('n_caixas'))})" for k in cats2],
+                               fontsize=7.5)
+            ax.set_xlim(-0.6, len(cats2) - 0.4)
+            ax.set_ylim(0, 1.02)
+            ax.set_title(titulo, fontsize=9, loc="left")
+        axs[0].set_ylabel("R_loc@0,3 (TEST-BOX)")
+        if sem:
+            axs[1].annotate("sem caixas: " + ", ".join(sem), xy=(0.98, 0.03), xycoords="axes fraction", ha="right",
+                            va="bottom", fontsize=7, color=TINTA_2)
+        legenda(fig, quais=com)
+        fig.tight_layout(rect=(0, 0.1, 1, 1))
+        gravar(fig, "fig_classe_tamanho")
     return gravados, ""
 
 
