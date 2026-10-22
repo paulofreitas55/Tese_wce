@@ -191,9 +191,13 @@ def test_a7_exemplos():
     from sam2_prop import rle
     with tempfile.TemporaryDirectory() as tmp:
         raiz, conj, _ = _projeto(tmp)
-        todas = conj["CAL"] + conj["VAL_EX"]
+        todas = [j for j in conj["CAL"] + conj["VAL_EX"] if j[1] != "0102"]   # 0102/800: seed sem caixa
         (raiz / "sets/ALL_SEEDBOX.json").write_text(json.dumps(
             {"nome": "ALL_SEEDBOX", "janelas": [{"split": s, "caso": c, "seed": e} for s, c, e, _ in todas]}))
+        jt = pd.read_csv(raiz / "data/derived/janelas_v1.csv", dtype=str, keep_default_na=False)
+        jt.loc[jt["caso"] == "0102", "seed_tem_box"] = "0"
+        jt["group_id"] = ["g1" if c in ("0101", "0102") else f"g_{c}" for c in jt["caso"]]   # mesmo grupo
+        jt.to_csv(raiz / "data/derived/janelas_v1.csv", index=False)
         (raiz / "configs/final_SAM2_L12.yaml").write_text(
             "metodo: SAM2_L12\nparametros: {prompt: caixa, l_max: 12}\n"
             "decisoes_A6: {niveis_A8: {alta: {score_minimo: 0.86}, media: null}}\n", encoding="utf-8")
@@ -208,7 +212,7 @@ def test_a7_exemplos():
         pred.parent.mkdir(parents=True)
         pd.DataFrame(linhas).to_csv(pred, index=False)
         ds, rng = raiz / "ds", np.random.default_rng(0)
-        for sp, caso, seed, _ in todas:
+        for sp, caso, seed, _ in conj["CAL"] + conj["VAL_EX"]:
             pasta = ds / sp / caso / "GT_com_classes" / str(seed)
             pasta.mkdir(parents=True)
             for f in range(seed - 10, seed + 11):
@@ -225,7 +229,7 @@ def test_a7_exemplos():
         a7 = raiz / "configs/a7.yaml"
         a7.write_text(
             f"fp_inspecao: {{saida: {raiz / 'outputs/14_fp_inspecao'}}}\n"
-            "exemplos:\n  casos: [[\"0201\", 600], [\"9999\", 1], \"0101\"]\n"
+            "exemplos:\n  casos: [[\"0201\", 600], [\"9999\", 1], \"0101\", [\"0102\", 800]]\n"
             "  offsets: [-12, -8, -4, -2, 0, 2, 4, 8, 12]\n"
             f"  previsoes: {pred}\n  mascaras: {raiz / 'outputs/masks/ALL_SEEDBOX'}\n"
             f"  saida: {raiz / 'outputs/16_a7_exemplos'}\n", encoding="utf-8")
@@ -233,7 +237,9 @@ def test_a7_exemplos():
         r = t16.main(["--ds", str(ds), "--config", str(raiz / "configs/avaliacao.yaml"), "--config-a7", str(a7),
                       "--final", str(raiz / "configs/final_SAM2_L12.yaml")])
         ind = r["indice"].set_index("caso")
-        assert list(r["indice"]["caso"]) == ["0201", "0101", "0202"] and r["fora"] == ["9999/1"]
+        assert list(r["indice"]["caso"]) == ["0201", "0101", "0102", "0202"] and r["fora"] == ["9999/1"]
+        assert ind.loc["0102", "motivos"] == "obrigatório, fora do âmbito: o seed não tem caixa"
+        assert ind.loc["0101", "motivos"] == "obrigatório · mesmo grupo de janelas que 0102/800"
         assert ind.loc["0201", "motivos"] == "obrigatório · marcado nos FP · acerto"
         assert ind.loc["0202", "motivos"] == "falha · falha em lesão plana"
         assert ind.loc["0201", "R_loc_janela"] == 1.0 and ind.loc["0202", "R_loc_janela"] == 0.0

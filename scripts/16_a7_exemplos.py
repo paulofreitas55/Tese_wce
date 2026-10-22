@@ -5,7 +5,10 @@ para o capítulo. Não avalia nada: só desenha o que o SAM2_L12 propôs na anot
 
 Janelas escolhidas (configs/a7.yaml, secção exemplos), por esta ordem e sem repetir (os motivos juntam-se):
   1. obrigatórias: os casos da Tabela 2 do diagnóstico, que o guião pede no A7, e as outras da lista (um par
-     [caso, seed] é essa janela; um caso sozinho são todas as janelas desse caso em ALL_SEEDBOX);
+     [caso, seed] é essa janela; um caso sozinho são todas as janelas desse caso em ALL_SEEDBOX). Uma janela pedida
+     que não está em ALL_SEEDBOX (por exemplo, seed sem caixa) fica fora do âmbito do método: desenha-se só com as
+     caixas originais, com o motivo (lido de janelas_v1.csv), e entram as janelas do mesmo grupo (sobrepostas) que
+     estão em ALL_SEEDBOX;
   2. as que marcaste na folha dos 50 FP (outputs/14_fp_inspecao/classificacao.csv) com uma nota que tenha "exemplo";
      o frame do FP entra na figura;
   3. automáticas, só em janelas de teste (TEST-BOX) e a partir das caixas originais: acerto (R_loc da janela máximo),
@@ -23,6 +26,7 @@ e em cada quadro o offset e o score.
 Uso, a partir da pasta do projeto, depois do source …/inicio.sh:
     python scripts/16_a7_exemplos.py --ds "$DS"
 Grava em outputs/16_a7_exemplos/ (configs/a7.yaml): NN_<motivo>_<caso>_<seed>.png e .pdf, e indice.csv.
+Versões: 1.0 (22 out 2026) · 1.1 (22 out 2026): janelas obrigatórias fora de ALL_SEEDBOX e o seu grupo.
 """
 import argparse
 import gzip
@@ -40,14 +44,15 @@ sys.path.insert(0, str(RAIZ / "methods"))
 import evaluate as ev  # noqa: E402
 from sam2_prop import rle_para_mascara  # noqa: E402
 
-VERSAO = "1.0"
+VERSAO = "1.1"
 CAIXA = ["box_x1", "box_y1", "box_x2", "box_y2"]
 PLANAS = {"erosao", "eritema"}
 ROTULOS = {"angiectasia": "angiectasia", "erosao": "erosão", "ulcera": "úlcera", "polipo": "pólipo",
            "eritema": "eritema", "xantelasma": "xantelasma"}
 MOTIVOS = {"obrigatorio": "obrigatório", "nota_fp": "marcado nos FP", "acerto": "acerto", "acerto_longe":
            "acerto longe do seed", "falha": "falha", "falha_plana": "falha em lesão plana",
-           "falha_pequena": "falha em lesão pequena"}
+           "falha_pequena": "falha em lesão pequena", "fora_ambito": "fora do âmbito",
+           "mesmo_grupo": "mesmo grupo de janelas"}
 VERDE, MAGENTA, AMARELO = "#00d000", "#ff00ff", "#ffd400"
 
 
@@ -232,33 +237,62 @@ def main(argv=None):
         por_caso.setdefault(k[1], []).append(k)
 
     # 1. obrigatórias e 2. notas dos FP
-    escolha, fora = {}, []
+    jt = pd.read_csv(cfg["caminhos"]["janelas"], dtype=str, keep_default_na=False)
+    jdict = {ev.chave(r["split"], r["caso"], r["seed"]): r for r in jt.to_dict("records")}
+    grupos = {}
+    for k, r in jdict.items():
+        if r.get("group_id"):
+            grupos.setdefault(r["group_id"], []).append(k)
+    em_all, escolha, fora = set(todas), {}, []
 
-    def junta(k, motivo, offset_fp=None):
-        e = escolha.setdefault(k, {"motivos": [], "offsets_fp": []})
-        if motivo not in e["motivos"]:
-            e["motivos"].append(motivo)
+    def junta(k, chave, texto=None, offset_fp=None):
+        e = escolha.setdefault(k, {"motivos": [], "textos": [], "offsets_fp": []})
+        if chave not in e["motivos"]:
+            e["motivos"].append(chave)
+            e["textos"].append(texto or MOTIVOS[chave])
         if offset_fp is not None:
             e["offsets_fp"].append(int(offset_fp))
 
+    def razao(k):
+        r = jdict[k]
+        if r.get("excluida", "0") == "1":
+            return "janela excluída"
+        if r.get("lesao", "1") != "1":
+            return "não é janela de lesão"
+        if r.get("seed_tem_box", "1") != "1":
+            return "o seed não tem caixa"
+        return "fora de ALL_SEEDBOX"
+
     for item in conf.get("casos", []):
-        if isinstance(item, (list, tuple)):
+        if isinstance(item, (list, tuple)):                              # uma janela: [caso, seed]
             caso, seed = str(item[0]).zfill(4), int(item[1])
-            ks = [k for k in por_caso.get(caso, []) if k[2] == seed]
-        else:
-            caso, seed = str(item).zfill(4), None
+            ks = sorted(k for k in jdict if k[1] == caso and k[2] == seed)
+            if not ks:
+                fora.append(f"{caso}/{seed}")
+            for k in ks:
+                if k in em_all:
+                    junta(k, "obrigatorio")
+                    continue
+                # fora do âmbito do método (o SAM 2 parte da caixa do seed): desenha-se só com as caixas originais,
+                # e entram as janelas do mesmo grupo (sobrepostas) que estão em ALL_SEEDBOX
+                junta(k, "fora_ambito", f"obrigatório, fora do âmbito: {razao(k)}")
+                for k2 in sorted(grupos.get(jdict[k].get("group_id", ""), [])):
+                    if k2 != k and k2 in em_all:
+                        junta(k2, "mesmo_grupo", f"mesmo grupo de janelas que {caso}/{seed}")
+        else:                                                            # um caso: todas as janelas em ALL_SEEDBOX
+            caso = str(item).zfill(4)
             ks = por_caso.get(caso, [])
-        if not ks:
-            fora.append(caso if seed is None else f"{caso}/{seed}")
-        for k in sorted(ks):
-            junta(k, "obrigatorio")
+            if not ks:
+                fora.append(caso)
+            for k in sorted(ks):
+                junta(k, "obrigatorio")
     folha = Path(a7["fp_inspecao"]["saida"]) / "classificacao.csv"
     if folha.is_file():
         fp = pd.read_csv(folha, dtype=str, keep_default_na=False)
         for r in fp[fp["nota"].str.contains("exemplo", case=False)].itertuples(index=False):
             k = (r.split, r.caso.zfill(4), int(r.seed))
             if k in set(todas):
-                junta(k, "nota_fp", r.offset)
+                junta(k, "nota_fp", offset_fp=r.offset)
 
     # 3. automáticas (janelas de teste, a partir das caixas originais)
     teste = [k for k in todas if k[0] == cfg["conjuntos"]["TEST_BOX"]["split"]]
@@ -286,7 +320,7 @@ def main(argv=None):
                     offs[j] = o
         offs = sorted(offs)
         cat = info.loc[k, "categoria"] if k in info.index else ""
-        mot = " · ".join(MOTIVOS[x] for x in ex["motivos"])
+        mot = " · ".join(ex["textos"])
         destino = saida / f"{n:02d}_{ex['motivos'][0]}_{k[1]}_{k[2]}"
         fr_j = fr[(fr["split"] == k[0]) & (fr["caso"] == k[1]) & (fr["seed"] == k[2])]
         pr_j = pr[(pr["split"] == k[0]) & (pr["caso"] == k[1]) & (pr["seed"] == k[2])]
@@ -303,7 +337,7 @@ def main(argv=None):
     L = [f"16 — exemplos qualitativos · 16_a7_exemplos.py v{VERSAO} · SAM2_L12, nível alta: score ≥ {tau:g}",
          f"{len(ind)} figuras em {saida}/ (png e pdf) · índice em {saida}/indice.csv"]
     if fora:
-        L.append(f"não estão em ALL_SEEDBOX (sem figura): {', '.join(fora)}")
+        L.append(f"não encontradas (sem figura): {', '.join(fora)}")
     L.append("")
     for r in ind.itertuples(index=False):
         extra = "" if r.R_loc_janela == "" else f" · R_loc da janela {r.R_loc_janela} ({r.caixas_originais} caixas)"
