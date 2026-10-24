@@ -8,15 +8,14 @@ scripts/17_c_itens.py. A regra está escrita na página e, depois do piloto, em 
   - À esquerda, sempre visível: o frame do seed com a caixa da anotação original, a imagem do relatório e a descrição
     clínica. Só é lido o ficheiro da caixa do SEED; as caixas originais dos outros frames nunca são lidas.
   - À direita: o frame a rever, ampliado, com a caixa proposta (magenta). Roda do rato = zoom; arrastar = mover;
-    duplo clique = tamanho normal; H esconde e mostra a caixa.
+    duplo clique = tamanho normal; H esconde e mostra a caixa; S mostra o seed em grande, com a caixa azul.
   - Em baixo: os frames da janela entre o seed e o frame a rever, sem caixas, para seguir a lesão. Um clique mostra o
-    frame em grande; Esc volta ao frame a rever.
-  - Respostas (gravam e passam à caixa seguinte):
-        A aceitar · M mal posta · R rejeitar · O rejeitar com a nota «outra lesão»
-        N não avaliável · D não avaliável com a nota «dúvida»
+    frame em grande (o seed, com a caixa azul); Esc volta ao frame a rever.
+  - Três respostas (gravam e passam à caixa seguinte):
+        A aceitar (a caixa marca a lesão do seed) · R rejeitar (não marca) · N não dá para decidir
     Z desfaz a última resposta desta sessão · ← → andam sem responder · U vai à próxima sem resposta.
-    O botão «Não identifico a lesão no seed» marca todas as caixas da janela como não avaliável, com essa nota.
-  - Modo ajustar (só com --ajustar): depois do M, desenha-se a caixa certa com o rato (Esc: mal posta sem caixa).
+  - Modo ajustar (só com --ajustar, não usado na revisão): aparece também o M (mal posta), com que se desenha a caixa
+    certa com o rato (Esc: mal posta sem caixa).
   - Às cegas: a lista só pode ter as colunas item, split, caso, seed, frame e box_x1..box_y2. A ferramenta recusa listas
     com mais colunas (score, nível, tipo, caixa original…) e nunca abre o ficheiro da chave.
   - Grava cada resposta logo em <saida>/<revisor>/decisoes.csv e num registo de todas as alterações (_registo.csv),
@@ -33,7 +32,10 @@ respondido já está gravado.
 No fim da revisão:
     python tools/rever.py --itens data/derived/guiao_c/itens_v1.csv --revisor paulo --consolidar
 grava data/derived/guiao_c/decisoes_<revisor>.csv (só de leitura), depois de verificar que todas as caixas têm resposta.
-Versão 1.0 (24 out 2026).
+Versões: 1.0 (24 out 2026) · 1.1 (24 out 2026): enquanto se revê uma janela, a seguinte (dados e imagens) carrega em
+segundo plano, e mudar de janela já não espera pelas gravações pendentes (menos espera, sobretudo à distância) ·
+1.2 (24 out 2026), depois do piloto: só três respostas (aceitar, rejeitar, não dá para decidir); saem o M (fica só no
+modo ajustar), o O, o D e o botão do seed; o seed vê-se em grande com a caixa (tecla S ou clique na tira).
 """
 import argparse
 import csv
@@ -56,7 +58,7 @@ try:
 except ImportError:                                            # sem Pillow: miniaturas = imagem inteira
     Image = None
 
-VERSAO = "1.0"
+VERSAO = "1.2"
 DECISOES = ("aceitar", "mal_posta", "rejeitar", "nao_avaliavel")
 COL_LISTA = ["item", "split", "caso", "seed", "frame", "box_x1", "box_y1", "box_x2", "box_y2"]
 COL_DEC = ["item", "split", "caso", "seed", "frame", "decisao", "nota", "box_aj_x1", "box_aj_y1", "box_aj_x2",
@@ -620,21 +622,20 @@ button:disabled{opacity:.4;cursor:default}
 #gravado{color:var(--mut);font-size:13px;min-width:130px;text-align:right}
 #gravado.erro{color:var(--erro);font-weight:700}
 #modo{font-size:12px;color:var(--mut)}
-main{display:grid;grid-template-columns:310px minmax(0,1fr);gap:12px;padding:10px 12px}
+main{display:grid;grid-template-columns:360px minmax(0,1fr);gap:12px;padding:10px 12px}
 .ref,.ver{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
 .ref{display:flex;flex-direction:column;gap:6px;align-self:start}
 .ref h3{margin:4px 0 0;font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);font-weight:600}
 .img-caixa{position:relative;line-height:0;overflow:hidden;border-radius:6px}
 .img-caixa img{display:block;width:100%;border-radius:6px;background:#000}
 .bbox{position:absolute;pointer-events:none;box-shadow:0 0 0 1px #000c}
-.bbox.seed{border:2px solid var(--seed)}
+.bbox.seed{border:3px solid var(--seed)}
 .bbox.prop{border:2px solid var(--prop)}
 .bbox.aj{border:2px dashed var(--aj)}
 .bbox.desenho{border:2px dashed #fff}
 #rel img{width:100%;max-height:150px;object-fit:contain;background:#000;border-radius:6px;margin-bottom:4px}
 .desc{font-size:15px;font-weight:600}
 .mut{color:var(--mut)}
-#bnaoid{margin-top:6px;font-size:13px}
 .ver{display:flex;flex-direction:column;align-items:center;gap:8px;min-width:0}
 .info{display:flex;gap:14px;align-items:baseline;flex-wrap:wrap;justify-content:center}
 .info .fr{font-size:18px;font-weight:700}
@@ -665,7 +666,7 @@ main{display:grid;grid-template-columns:310px minmax(0,1fr);gap:12px;padding:10p
 .th span{position:absolute;left:2px;top:2px;line-height:1;font-size:10px;font-weight:700;padding:2px 3px;border-radius:3px;background:#000b;color:#fff}
 .th.seed span{background:var(--seed);color:#000}
 .th.alvo{border-color:var(--prop)}
-.th.ver{outline:2px solid #fff;outline-offset:1px}
+.th.vista{outline:2px solid #fff;outline-offset:1px}
 @media (max-width:900px){main{grid-template-columns:1fr}.palco{width:min(92vw,70vh)}}
 </style>
 </head>
@@ -689,14 +690,12 @@ main{display:grid;grid-template-columns:310px minmax(0,1fr);gap:12px;padding:10p
     <h3>Descrição clínica</h3>
     <div class="desc" id="desc"></div>
     <div class="mut" id="cat"></div>
-    <button id="bnaoid" title="marca todas as caixas desta janela como não avaliável">Não identifico a lesão no seed</button>
     <h3>Regra</h3>
     <div class="regra">
-      <p><b>A · aceitar</b>: a caixa apanha a lesão do seed mais ou menos como a desenharias.</p>
-      <p><b>M · mal posta</b>: a lesão do seed está no frame, mas a caixa corta uma parte importante dela, é muito maior ou está ao lado.</p>
-      <p><b>R · rejeitar</b>: a lesão do seed não está neste frame (<b>O</b>, se a caixa estiver noutra lesão).</p>
-      <p><b>N · não avaliável</b>: a imagem não deixa decidir (<b>D</b>, se a dúvida for se é a mesma lesão).</p>
-      <p class="mut">Decide à primeira impressão.</p>
+      <p><b>A · aceitar</b>: a caixa marca a lesão do seed (a da caixa azul), mais ou menos como a desenharias.</p>
+      <p><b>R · rejeitar</b>: a caixa não marca a lesão do seed: está noutra coisa, ou a lesão não está no frame.</p>
+      <p><b>N · não dá para decidir</b>: a imagem não deixa ver, ou não reconheces a lesão do seed.</p>
+      <p class="mut">S mostra o seed em grande. Decide à primeira impressão.</p>
     </div>
   </aside>
   <section class="ver">
@@ -704,38 +703,31 @@ main{display:grid;grid-template-columns:310px minmax(0,1fr);gap:12px;padding:10p
       <span class="badge" id="badge">sem resposta</span><span id="ctxtxt"></span></div>
     <div class="palco" id="palco"><div class="zoom" id="zoom"><img id="atual" alt="">
       <div class="bbox prop" id="propbox" hidden></div><div class="bbox aj" id="ajbox" hidden></div>
+      <div class="bbox seed" id="seedgrande" hidden></div>
       <div class="bbox desenho" id="desenho" hidden></div></div></div>
     <div class="tira"><div id="thumbs"></div>
       <span class="mut">do seed ao frame a rever, sem caixas · clica num frame para o ver em grande · Esc volta</span></div>
     <div class="aviso" id="aviso"></div>
     <div class="botoes">
       <button class="ba" data-d="aceitar">A · aceitar</button>
-      <button class="bm" data-d="mal_posta">M · mal posta</button>
       <button class="br" data-d="rejeitar">R · rejeitar</button>
-      <button class="bn" data-d="nao_avaliavel">N · não avaliável</button>
+      <button class="bn" data-d="nao_avaliavel">N · não dá para decidir</button>
+      <button class="bm" data-d="mal_posta" id="bmal" hidden>M · mal posta (desenhar)</button>
     </div>
-    <div class="botoes">
-      <button id="bout" title="rejeitar com a nota «outra lesão»">O · outra lesão</button>
-      <button id="bduv" title="não avaliável com a nota «dúvida»">D · dúvida</button>
-      <button id="bundo">Z · desfazer</button>
-      <button id="bprev">← anterior</button>
-      <button id="bnext">seguinte →</button>
-      <button id="bvazio">U · próxima sem resposta</button>
-      <button id="bcaixa">H · esconder caixa</button>
-    </div>
+    <div class="ajuda">S seed em grande · Z desfaz · ← → andam sem responder · U próxima sem resposta · H esconde a caixa ·
+      roda do rato: zoom · duplo clique: tamanho normal · Esc volta</div>
     <input id="nota" placeholder="nota desta caixa (opcional; Enter grava)" style="width:min(560px,100%)">
-    <div class="ajuda">Roda do rato: zoom · arrastar: mover · duplo clique: tamanho normal · ← → andam sem responder ·
-      Z desfaz a última resposta desta sessão · Esc volta do contexto ao frame a rever</div>
   </section>
 </main>
 <script>
 const $ = id => document.getElementById(id);
-const NOME = {aceitar: "aceitar", mal_posta: "mal posta", rejeitar: "rejeitar", nao_avaliavel: "não avaliável"};
+const NOME = {aceitar: "aceitar", mal_posta: "mal posta", rejeitar: "rejeitar", nao_avaliavel: "não dá para decidir"};
 const RAPIDAS = ["outra lesão", "dúvida", "não identifico a lesão no seed"];
 let E = null, J = null, pos = 0, ctx = null, mostrado = 0, pilha = [], seq = 0, carregando = false;
 let desenhar = false, ini = null, mostrarCaixa = true;
 let zoom = {s: 1, x: 0, y: 0}, arrasto = null;
 let fila = Promise.resolve(), pendentes = 0;
+const cacheJ = {}, aCarregar = {};                // janelas já carregadas (com as respostas desta sessão) e a carregar
 
 function notaPara(antiga, extra) {
   // as notas rápidas (O, D, botão do seed) saem quando a resposta muda; o texto escrito à mão fica
@@ -746,8 +738,10 @@ function notaPara(antiga, extra) {
 
 const esc = s => String(s).replace(/[&<>"]/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]));
 const offTxt = o => o === 0 ? "seed" : (o > 0 ? "+" + o : "−" + (-o));
-const W = () => `j=${J.j}&w=${J.caso}_${J.seed}`;
-const img = (f, t) => `/img?${W()}&f=${f}` + (t ? "&t=1" : "");
+const Wd = w => `j=${w.j}&w=${w.caso}_${w.seed}`;
+const W = () => Wd(J);
+const imgDe = (w, f, t) => `/img?${Wd(w)}&f=${f}` + (t ? "&t=1" : "");
+const img = (f, t) => imgDe(J, f, t);
 const itemAtual = () => J.itens.find(x => x.item === E.itens[pos][0]);
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 
@@ -796,6 +790,7 @@ async function iniciar() {
   const s = $("jsel"); s.innerHTML = "";
   E.janelas.forEach(j => { const o = document.createElement("option"); o.value = j.j; s.appendChild(o); });
   $("modo").textContent = `revisor ${E.revisor} · ` + (E.ajustar ? "modo ajustar" : "modo só marcar");
+  $("bmal").hidden = !E.ajustar;
   listaJanelas();
   pos = E.atual;
   await mostrarItem();
@@ -807,8 +802,33 @@ function opcao(j) {
   $("jsel").options[j].textContent = `${j + 1}/${E.janelas.length} · caso ${w.caso} · seed ${w.seed} · ${r}/${w.n}` + (r === w.n ? " ✓" : "");
 }
 function listaJanelas() { E.janelas.forEach(w => opcao(w.j)); }
+function carregarJanela(j) {
+  if (cacheJ[j]) return Promise.resolve(cacheJ[j]);
+  if (!aCarregar[j]) aCarregar[j] = get("/api/janela?j=" + j).then(w => { cacheJ[j] = w; delete aCarregar[j]; return w; },
+                                                                   e => { delete aCarregar[j]; throw e; });
+  return aCarregar[j];
+}
+function framesTira(w, it) {
+  const a = it.frame < w.seed ? it.frame - 1 : w.seed, b = it.frame > w.seed ? it.frame + 1 : w.seed;
+  return w.frames.filter(f => f >= a && f <= b);
+}
+function preCarregarItem(w, it) {
+  new Image().src = imgDe(w, it.frame);
+  for (const f of framesTira(w, it)) new Image().src = imgDe(w, f, true);
+}
+function preCarregar(n) {
+  // as próximas caixas desta janela e a janela seguinte, em segundo plano, para não haver espera
+  for (const x of J.itens.slice(n + 1, n + 4)) preCarregarItem(J, x);
+  const jn = J.j + 1;
+  if (jn >= E.janelas.length || cacheJ[jn] || aCarregar[jn]) return;
+  carregarJanela(jn).then(w => {
+    new Image().src = imgDe(w, w.seed);
+    w.relatorios.forEach(k => { new Image().src = `/rel?${Wd(w)}&k=${k}`; });
+    preCarregarItem(w, w.itens.find(x => !x.decisao) || w.itens[0]);
+  }).catch(() => {});
+}
 async function abrirJanela(j) {
-  J = await get("/api/janela?j=" + j);
+  J = await carregarJanela(j);
   $("jsel").value = j;
   $("jprev").disabled = j === 0; $("jnext").disabled = j === E.janelas.length - 1;
   $("seedimg").src = img(J.seed);
@@ -823,10 +843,10 @@ async function mostrarItem() {
   const meu = ++seq, j = E.itens[pos][1];
   if (!J || J.j !== j) {
     carregando = true;
-    try { await fila; await abrirJanela(j); } finally { if (meu === seq) carregando = false; }
+    try { await abrirJanela(j); } finally { if (meu === seq) carregando = false; }
     if (meu !== seq) return;                     // entretanto pediu-se outra caixa
   }
-  ctx = null; desenharOff(); repor();
+  ctx = null; desenharOff(); repor(); $("seedgrande").hidden = true;
   const it = itemAtual();
   $("atual").src = img(it.frame);
   caixa($("propbox"), mostrarCaixa ? it.box : null);
@@ -837,18 +857,16 @@ async function mostrarItem() {
   $("ctxtxt").textContent = "";
   emblema(it.decisao);
   $("nota").value = it.nota || "";
-  $("bprev").disabled = pos === 0; $("bnext").disabled = pos === E.itens.length - 1;
   miniaturas(it);
   contagens();
-  for (const x of J.itens.slice(n + 1, n + 4)) new Image().src = img(x.frame);
+  preCarregar(n);
   mostrado = performance.now();
 }
 function emblema(d) {
   const b = $("badge"); b.className = "badge" + (d ? " " + d : ""); b.textContent = d ? NOME[d] : "sem resposta";
 }
 function miniaturas(it) {
-  const a = it.frame < J.seed ? it.frame - 1 : J.seed, b = it.frame > J.seed ? it.frame + 1 : J.seed;
-  const fs = J.frames.filter(f => f >= a && f <= b);
+  const fs = framesTira(J, it);
   $("thumbs").innerHTML = fs.map(f => `<div class="th${f === J.seed ? " seed" : ""}${f === it.frame ? " alvo" : ""}" data-f="${f}">` +
     `<img loading="lazy" src="${img(f, true)}" alt=""><span>${f === J.seed ? "★ seed" : offTxt(f - J.seed)}</span></div>`).join("");
 }
@@ -863,8 +881,10 @@ function verContexto(f) {
   ctx = f; desenharOff();
   $("atual").src = img(f);
   caixa($("propbox"), null); caixa($("ajbox"), null);
-  $("ctxtxt").textContent = `contexto: ${f === J.seed ? "o seed" : "offset " + offTxt(f - J.seed)} (sem caixa) · Esc volta`;
-  for (const t of document.querySelectorAll(".th")) t.classList.toggle("ver", +t.dataset.f === f);
+  caixa($("seedgrande"), f === J.seed ? J.caixa : null);
+  $("ctxtxt").textContent = f === J.seed ? "o seed: a caixa azul é o que ele segue · Esc volta"
+                                         : `contexto: offset ${offTxt(f - J.seed)} (sem caixa) · Esc volta`;
+  for (const t of document.querySelectorAll(".th")) t.classList.toggle("vista", +t.dataset.f === f);
 }
 function voltar() {
   if (ctx === null) return;
@@ -873,8 +893,9 @@ function voltar() {
   $("atual").src = img(it.frame);
   caixa($("propbox"), mostrarCaixa ? it.box : null);
   caixa($("ajbox"), mostrarCaixa ? it.box_aj : null);
+  $("seedgrande").hidden = true;
   $("ctxtxt").textContent = "";
-  for (const t of document.querySelectorAll(".th")) t.classList.remove("ver");
+  for (const t of document.querySelectorAll(".th")) t.classList.remove("vista");
 }
 function irPara(p) { pos = clamp(p, 0, E.itens.length - 1); mostrarItem().catch(e => alert(e.message)); }
 function andar(d) {
@@ -926,22 +947,11 @@ async function desfazer() {
   await fila;
   await post("/api/apagar", {item});
   E.itens[p][2] = 0;
-  if (J && J.j === E.itens[p][1]) { const it = J.itens.find(x => x.item === item); it.decisao = ""; it.nota = notaPara(it.nota); it.box_aj = null; }
+  const w = cacheJ[E.itens[p][1]];
+  if (w) { const it = w.itens.find(x => x.item === item); it.decisao = ""; it.nota = notaPara(it.nota); it.box_aj = null; }
   opcao(E.itens[p][1]);
   pos = p; await mostrarItem();
   aviso("Resposta desfeita.");
-}
-async function naoIdentifico() {
-  if (carregando) return;
-  const n = J.itens.length;
-  if (!confirm(`Marcar as ${n} caixas desta janela como «não avaliável» (não identifico a lesão no seed)?`)) return;
-  await fila;
-  await post("/api/nao_identifico", {j: J.j});
-  for (const it of J.itens) { it.decisao = "nao_avaliavel"; it.nota = notaPara(it.nota, "não identifico a lesão no seed"); it.box_aj = null; }
-  E.itens.forEach(x => { if (x[1] === J.j) x[2] = 1; });
-  opcao(J.j);
-  const seguinte = E.itens.findIndex(x => x[1] > J.j);
-  if (seguinte >= 0) irPara(seguinte); else { mostrarItem(); aviso("Era a última janela."); }
 }
 function gravarNota() {
   const it = itemAtual(), t = $("nota").value.trim();
@@ -999,14 +1009,6 @@ $("palco").addEventListener("dblclick", () => repor());
 document.querySelectorAll("button[data-d]").forEach(b => b.addEventListener("click", () => {
   b.blur(); if (b.dataset.d === "mal_posta") malPosta(); else decidir(b.dataset.d);
 }));
-$("bout").onclick = () => { $("bout").blur(); decidir("rejeitar", "outra lesão"); };
-$("bduv").onclick = () => { $("bduv").blur(); decidir("nao_avaliavel", "dúvida"); };
-$("bundo").onclick = () => { $("bundo").blur(); desfazer(); };
-$("bprev").onclick = () => { $("bprev").blur(); andar(-1); };
-$("bnext").onclick = () => { $("bnext").blur(); andar(1); };
-$("bvazio").onclick = () => { $("bvazio").blur(); proximaSem(); };
-$("bcaixa").onclick = () => { $("bcaixa").blur(); alternarCaixa(); };
-$("bnaoid").onclick = () => { $("bnaoid").blur(); naoIdentifico(); };
 $("jsel").addEventListener("change", () => { $("jsel").blur(); irPara(primeiraDaJanela(+$("jsel").value)); });
 $("jprev").onclick = () => { $("jprev").blur(); if (J.j > 0) irPara(primeiraDaJanela(J.j - 1)); };
 $("jnext").onclick = () => { $("jnext").blur(); if (J.j < E.janelas.length - 1) irPara(primeiraDaJanela(J.j + 1)); };
@@ -1015,7 +1017,7 @@ $("nota").addEventListener("keydown", ev => { if (ev.key === "Enter" || ev.key =
 $("nota").addEventListener("change", gravarNota);
 function alternarCaixa() {
   mostrarCaixa = !mostrarCaixa;
-  $("bcaixa").textContent = mostrarCaixa ? "H · esconder caixa" : "H · mostrar caixa";
+  aviso(mostrarCaixa ? "Caixa à vista." : "Caixa escondida (H mostra outra vez).");
   if (ctx === null) { const it = itemAtual(); caixa($("propbox"), mostrarCaixa ? it.box : null); caixa($("ajbox"), mostrarCaixa ? it.box_aj : null); }
 }
 document.addEventListener("keydown", ev => {
@@ -1026,11 +1028,10 @@ document.addEventListener("keydown", ev => {
   const k = ev.key.toLowerCase();
   if (desenhar && k === "escape") { desenharOff(); decidir("mal_posta"); ev.preventDefault(); return; }
   if (k === "a") decidir("aceitar");
-  else if (k === "m") malPosta();
   else if (k === "r") decidir("rejeitar");
-  else if (k === "o") decidir("rejeitar", "outra lesão");
   else if (k === "n") decidir("nao_avaliavel");
-  else if (k === "d") decidir("nao_avaliavel", "dúvida");
+  else if (k === "m" && E.ajustar) malPosta();
+  else if (k === "s") { if (ctx === J.seed) voltar(); else verContexto(J.seed); }
   else if (k === "z" || k === "backspace") desfazer();
   else if (k === "arrowleft") andar(-1);
   else if (k === "arrowright") andar(1);
