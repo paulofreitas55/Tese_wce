@@ -3,7 +3,7 @@ Testes da ferramenta de revisão do Guião C (tools/rever.py). Correm de duas ma
     python tests/test_rever.py          (não precisa de pytest)
     python -m pytest tests/test_rever.py -q
 Usam um dataset inventado (imagens geradas na hora, com o formato de pastas real); nunca leem dados reais.
-Versão 1.0 (24 out 2026).
+Versões: 1.0 (24 out 2026) · 1.1 (24 out 2026): o contexto da ferramenta v1.3 (caixas dos outros frames).
 """
 import csv
 import importlib.util
@@ -26,6 +26,29 @@ _spec.loader.exec_module(rv)
 JANELAS = [("Dataset_Teste", "0201", 600, (597, 603, 605)), ("Dataset_Treino", "0101", 500, (499,)),
            ("Dataset_Teste", "0202", 900, (893, 902))]
 CAIXA = (0.30, 0.30, 0.50, 0.50)
+ORIG, MOD = (0.20, 0.22, 0.40, 0.44), (0.32, 0.30, 0.52, 0.50)
+# contexto inventado: caixas originais em seed−2, seed−1 e seed+1 (e nunca nos frames da lista); do modelo em todos os
+# outros frames seguidos; a janela 0202 fica sem caixas originais
+
+
+def _contexto_linhas():
+    linhas = []
+    for sp, caso, seed, fs in JANELAS:
+        for f in range(seed - 12, seed + 13):
+            if f == seed or f in fs:
+                continue
+            if caso != "0202" and f - seed in (-2, -1, 1):
+                linhas.append([sp, caso, seed, f, "original", *ORIG])
+            linhas.append([sp, caso, seed, f, "modelo", *MOD])
+    return linhas
+
+
+def _escrever_contexto(caminho, linhas, colunas=None):
+    with open(caminho, "w", encoding="utf-8", newline="") as fh:
+        w = csv.writer(fh)
+        w.writerow(colunas or rv.COL_CONTEXTO)
+        w.writerows(linhas)
+    return caminho
 
 
 class Saltar(Exception):
@@ -71,6 +94,7 @@ def _projeto(raiz, extra_col=None):
         w.writerow(["split", "caso", "seed", "categoria", "descricao"])
         for sp, caso, seed, _ in JANELAS:
             w.writerow([sp, caso, seed, "erosao", "Erosao_no_jejuno"])
+    _escrever_contexto(raiz / "contexto_v1.csv", _contexto_linhas())
     lista = raiz / "itens_v1.csv"
     with open(lista, "w", encoding="utf-8", newline="") as fh:
         w = csv.writer(fh)
@@ -86,7 +110,8 @@ def _projeto(raiz, extra_col=None):
 def _estado(raiz, ds, lista, revisor="paulo", ajustar=False):
     itens = rv.ler_lista(lista)
     pasta = rv.preparar_saida(raiz / "revisao", revisor, str(lista), rv.sha256(lista))
-    return rv.Estado(str(ds), itens, pasta, rv.ler_tabela(raiz / "janelas.csv"), revisor, ajustar)
+    ctx, _ = rv.ler_contexto(raiz / "contexto_v1.csv", itens)
+    return rv.Estado(str(ds), itens, pasta, rv.ler_tabela(raiz / "janelas.csv"), revisor, ajustar, ctx)
 
 
 def _linhas(f):
@@ -110,7 +135,7 @@ def test_lista_tem_de_ser_cega_e_bem_formada():
         erro(rv.ler_lista, lista, contem="repetidos")
 
 
-def test_api_nunca_mostra_score_nem_caixas_dos_vizinhos():
+def test_api_nunca_mostra_score_nem_caixas_nos_frames_da_lista():
     with tempfile.TemporaryDirectory() as tmp:
         raiz, ds, lista = _projeto(tmp)
         est = _estado(raiz, ds, lista)
@@ -121,6 +146,42 @@ def test_api_nunca_mostra_score_nem_caixas_dos_vizinhos():
         assert [round(x, 3) for x in j["caixa"]] == [0.25, 0.25, 0.5, 0.5]       # a do seed, com os cantos ordenados
         assert [x["frame"] for x in j["itens"]] == [597, 603, 605] and j["itens"][0]["offset"] == -3
         assert j["descricao"] == "Erosao_no_jejuno" and j["relatorios"] == [0] and not j["avisos"]
+        # a tira: os frames seguidos (seed ± 12) com as caixas do contexto; nos frames da lista, nenhuma
+        s = {x["f"]: x for x in j["seguidos"]}
+        assert sorted(s) == list(range(588, 613)) and est.estado()["alcance"] == 12
+        assert all(s[f]["o"] is None and s[f]["m"] is None for f in (597, 603, 605))
+        assert s[600]["o"] == j["caixa"] and s[600]["m"] is None                 # o seed, com a sua caixa
+        assert s[598]["o"] == list(ORIG) and s[598]["m"] == list(MOD) and s[610]["o"] is None
+        # a caixa original do seed+1 vem do contexto: o ficheiro Findings desse frame ("0 0 60 60") nunca é lido
+        assert s[601]["o"] == list(ORIG)
+        j2 = est.janela(2)                                                       # 0202: sem caixas originais no contexto
+        assert all(x["o"] is None for x in j2["seguidos"] if x["f"] != 900)
+
+
+def test_contexto_tem_de_ser_cego_e_desta_lista():
+    with tempfile.TemporaryDirectory() as tmp:
+        raiz, ds, lista = _projeto(tmp)
+        itens = rv.ler_lista(lista)
+        linhas = _contexto_linhas()
+        f = raiz / "c.csv"
+        erro(rv.ler_contexto, _escrever_contexto(f, [x + ["0.9"] for x in linhas], rv.COL_CONTEXTO + ["score"]), itens,
+             contem="colunas a mais (score)")
+        erro(rv.ler_contexto, _escrever_contexto(f, linhas + [["Dataset_Teste", "0201", 600, 597, "original", *ORIG]]),
+             itens, contem="está na lista")
+        erro(rv.ler_contexto, _escrever_contexto(f, linhas + [["Dataset_Teste", "0201", 600, 590, "rodrigo", *ORIG]]),
+             itens, contem="fonte desconhecida")
+        erro(rv.ler_contexto, _escrever_contexto(f, linhas + [["Dataset_Teste", "0201", 600, 590, "modelo", 0.5, 0.3, 0.4, 0.5]]),
+             itens, contem="caixa inválida")
+        erro(rv.ler_contexto, _escrever_contexto(f, linhas + [linhas[0]]), itens, contem="duas caixas")
+        erro(rv.ler_contexto, raiz / "nao_existe.csv", itens, contem="17b_c_contexto.py")
+        # janelas de outra lista são ignoradas; conta-se quantas janelas da lista ficaram sem contexto
+        so_duas = [x for x in linhas if x[1] != "0202"] + [["Dataset_Teste", "0999", 100, 101, "modelo", *MOD]]
+        ctx, sem = rv.ler_contexto(_escrever_contexto(f, so_duas), itens)
+        assert sem == 1 and ("Dataset_Teste", "0999", 100) not in ctx
+        # sem o ficheiro, a ferramenta não arranca (a não ser com --sem-contexto)
+        erro(rv.main, ["--dataset", str(ds), "--itens", str(lista), "--revisor", "paulo", "--saida", str(raiz / "revisao"),
+                       "--tabela", str(raiz / "janelas.csv"), "--contexto", str(raiz / "nao_existe.csv")],
+             contem="Não encontrei o contexto")
 
 
 # ------------------------------------------------------------------ respostas, desfazer e retoma
@@ -230,6 +291,8 @@ def test_servidor_responde_e_nunca_serve_imagens_de_outra_janela():
             s, _, corpo = _get(base + "/api/estado")
             e = json.loads(corpo)
             assert s == 200 and e["total"] == 6 and len(e["janelas"]) == 3 and e["ajustar"] is False
+            s, _, corpo = _get(base + "/api/janela?j=1")
+            assert s == 200 and len(json.loads(corpo)["seguidos"]) == 25
             assert _get(base + "/img?j=0&w=0201_600&f=603")[:2] == (200, "image/jpeg")
             assert _get(base + "/img?j=0&w=0201_600&f=612&t=1")[0] == 200           # contexto e miniatura
             assert _get(base + "/rel?j=0&w=0201_600&k=0")[0] == 200

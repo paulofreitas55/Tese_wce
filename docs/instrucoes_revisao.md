@@ -1,47 +1,42 @@
 # Instruções da revisão — Guião C
 
-Versão 1 (24 out 2026). Valem para toda a revisão. Depois do piloto (C4) não mudam; qualquer mudança dá uma versão nova, registada no `docs/decisoes.md`.
+Versão 3 (24 out 2026), para a ferramenta v1.3. Substitui a v2 (a do piloto): as três respostas e a regra não mudam; muda o que se vê. Qualquer mudança dá uma versão nova, registada no `docs/decisoes.md`.
 
 ## O que se pede
 
-Em cada caixa, decidir se a caixa proposta marca **a lesão do seed** naquele frame. Não é para diagnosticar nem para procurar outras lesões.
+Em cada caixa a rever (roxa, cheia), decidir se marca **a lesão do seed** naquele frame. Não é para diagnosticar nem para procurar outras lesões.
 
-## O que a ferramenta mostra (`tools/rever.py`)
+## O que ele segue
 
-- **À esquerda:** o seed com a caixa da anotação original (azul-claro), a imagem do relatório e a descrição clínica. É a referência: a lesão a seguir é a que está dentro da caixa do seed.
-- **À direita:** o frame a rever, com a caixa proposta (magenta). Por baixo, os frames entre o seed e esse frame, sem caixas. Um clique abre-os em grande e o Esc volta.
-- **Não mostra:** o score do modelo, se o frame já tinha caixa original e se a caixa é um controlo.
+A lesão do seed é **a que está dentro da caixa azul do seed**: a imagem no canto superior esquerdo, ou em grande com a tecla **S**. A descrição clínica ajuda a saber o que procurar, mas o alvo é sempre o que está na caixa azul do seed. Num texto com duas lesões, o alvo é só a que está na caixa.
 
-## A mesma lesão
+## O que se vê
 
-O critério é o da referência PF v2. A lesão do seed tem de estar visível, pelo menos em parte, e tens de a reconhecer com certeza como a mesma. Para isso ajudam:
-- a forma e a cor;
-- a posição em relação às pregas e ao que está à volta;
-- a continuidade nos frames do meio.
+- Em baixo, a tira com todos os frames seguidos (do seed −12 ao +12), cada um com as suas caixas:
+  - **azul**: caixa da anotação original, desenhada pelo Rodrigo (pode ter erros);
+  - **roxo cheio**: a caixa a rever, com a resposta já dada (A, R, N) ou «?» se ainda não tem;
+  - **roxo tracejado**: a caixa do modelo noutro frame. Não é para rever e pode estar certa ou errada.
+- ← → andam frame a frame dentro da janela; um clique numa miniatura abre-a em grande. Assim segue-se a lesão desde o seed, passando pelos frames com caixa azul, até ao frame a rever.
+- No frame que estás a rever nunca aparece caixa azul: nas caixas novas não existe e, nos poucos frames da lista que a têm, fica escondida de propósito.
 
-## As respostas
+## As três respostas
 
 | Tecla | Resposta | Quando |
 | --- | --- | --- |
-| A | aceitar | A caixa apanha a lesão do seed mais ou menos como a desenharias: não corta uma parte importante dela e não é muito maior (à vista, IoU ≥ 0,5). |
-| M | mal posta | A lesão do seed está no frame, mas a caixa corta uma parte importante dela, é muito maior ou está ao lado. |
-| R | rejeitar | A lesão do seed não está neste frame. A caixa está em mucosa, pregas, bolhas, resíduos ou reflexos. |
-| O | rejeitar, com a nota «outra lesão» | A caixa está numa lesão, mas não na do seed. |
-| N | não avaliável | A imagem não deixa decidir: desfocada, escura, ou tapada por bolhas ou conteúdo. |
-| D | não avaliável, com a nota «dúvida» | A imagem é boa, mas não tens a certeza de que é a mesma lesão. |
-| botão | não identifico a lesão no seed | Não consegues ver a lesão dentro da caixa do seed. Todas as caixas da janela ficam «não avaliável». |
+| A | aceitar | A caixa roxa cheia marca a lesão do seed, mais ou menos como a desenharias. Uma caixa um pouco maior ou um pouco mais pequena aceita-se. |
+| R | rejeitar | A caixa não marca a lesão do seed: está noutra coisa (mucosa, pregas, bolhas, resíduos, reflexos ou outra lesão), ou a lesão não está no frame. Mesmo que a lesão esteja noutro sítio do frame, se a caixa não está nela é R. |
+| N | não dá para decidir | A imagem não deixa ver (desfocada, escura, tapada por bolhas ou conteúdo), ou não reconheces a lesão do seed, ou não tens a certeza de que é a mesma lesão. |
 
-**Desempates**
-- **Entre aceitar e mal posta:** usa «mal posta» só quando o erro é claro. Uma caixa um pouco maior ou um pouco mais pequena aceita-se.
-- **Entre aceitar e dúvida:** sem certeza de que é a mesma lesão, é D. Não se dá o benefício ao método.
-- **Entre rejeitar e não avaliável:** se a imagem deixa ver bem o sítio e a lesão do seed não está lá, é R. Se a imagem não deixa ver, é N.
+**É a mesma lesão** quando a reconheces com certeza pela forma, pela cor, pela posição em relação às pregas e pela continuidade nos frames vizinhos. Sem essa certeza, a resposta é N: não se dá o benefício ao método. As caixas dos outros frames (azuis ou tracejadas) são só contexto: ajudam a seguir a lesão, mas não decidem a resposta.
+
+**Seed duvidoso.** Se a caixa azul do seed não marca nada claro (caixa do Rodrigo mal posta), escreve `seed duvidoso` na nota da primeira caixa dessa janela (Enter grava) e responde N a todas as caixas da janela.
 
 ## Como trabalhar
 
 - Sessões de cerca de 1 h, com pausa entre elas. A ferramenta grava cada resposta e, quando a voltas a abrir, retoma na primeira caixa sem resposta.
-- Decide à primeira impressão. O Z serve só para enganos de tecla.
-- Quando a lesão mudou de aspeto, sobretudo longe do seed, usa os frames de baixo.
-- Usa a nota (opcional) só para o que for útil na análise de erros.
+- Depois de cada resposta, a ferramenta passa à próxima caixa por responder (primeiro as da mesma janela).
+- Quando é óbvio, responde logo; quando não é, usa as setas para seguir a lesão.
+- Teclas: A, R, N respondem (só nos frames com caixa a rever) · ← → frame a frame · U próxima por responder · Esc volta à caixa · S seed · Z desfaz a última resposta · H esconde as caixas · PgUp/PgDn mudam de janela · roda do rato: zoom; duplo clique: tamanho normal.
 - Até consolidares a revisão, não abras o `itens_chave_v1.csv` nem o `expanded_v1.csv`.
 - No fim de cada sessão, copia a pasta das respostas para `/mnt/paulo/tese_2026/copias/`.
 
