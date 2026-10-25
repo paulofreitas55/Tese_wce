@@ -44,7 +44,9 @@ segundo plano, e mudar de janela já não espera pelas gravações pendentes (me
 modo ajustar), o O, o D e o botão do seed; o seed vê-se em grande com a caixa (tecla S ou clique na tira) ·
 1.3 (24 out 2026): a tira passa a ter todos os frames seguidos, com as caixas originais e do modelo dos outros frames
 (contexto do script 17b) e a resposta de cada caixa; ← → andam frame a frame; depois de responder, segue para a próxima
-caixa por responder; PgUp/PgDn mudam de janela.
+caixa por responder; PgUp/PgDn mudam de janela · 1.3.1 (24 out 2026), só aspeto: a caixa do modelo nos outros frames
+passa a ser desenhada um pouco por fora (quando coincidia com a do Rodrigo, as duas pareciam uma caixa roxa cheia); os
+frames de contexto dizem «só contexto: não é para rever»; o aviso apaga-se ao mudar de frame.
 """
 import argparse
 import csv
@@ -67,7 +69,7 @@ try:
 except ImportError:                                            # sem Pillow: miniaturas = imagem inteira
     Image = None
 
-VERSAO = "1.3"
+VERSAO = "1.3.1"
 DECISOES = ("aceitar", "mal_posta", "rejeitar", "nao_avaliavel")
 COL_LISTA = ["item", "split", "caso", "seed", "frame", "box_x1", "box_y1", "box_x2", "box_y2"]
 COL_DEC = ["item", "split", "caso", "seed", "frame", "decisao", "nota", "box_aj_x1", "box_aj_y1", "box_aj_x2",
@@ -713,7 +715,7 @@ main{display:grid;grid-template-columns:340px minmax(0,1fr);gap:12px;padding:10p
 .bbox.seed{border:3px solid var(--seed)}
 .bbox.orig{border:2px solid var(--seed)}
 .bbox.prop{border:2px solid var(--prop)}
-.bbox.mod{border:2px dashed var(--prop);box-shadow:none}
+.bbox.mod{border:0;outline:2px dashed var(--prop);outline-offset:4px;box-shadow:none}
 .bbox.aj{border:2px dashed var(--aj)}
 .bbox.desenho{border:2px dashed #fff}
 #rel img{width:100%;max-height:150px;object-fit:contain;background:#000;border-radius:6px;margin-bottom:4px}
@@ -754,7 +756,7 @@ main{display:grid;grid-template-columns:340px minmax(0,1fr);gap:12px;padding:10p
 .th .mb{position:absolute;pointer-events:none;border:1.5px solid}
 .th .mb.orig{border-color:var(--seed)}
 .th .mb.prop{border-color:var(--prop)}
-.th .mb.mod{border:1.5px dashed var(--prop)}
+.th .mb.mod{border:0;outline:1.5px dashed var(--prop);outline-offset:2px}
 .th .lab{position:absolute;left:2px;top:2px;line-height:1;font-size:10px;font-weight:700;padding:2px 3px;border-radius:3px;background:#000b;color:#fff}
 .th.seed .lab{background:var(--seed);color:#000}
 .th .res{position:absolute;right:2px;bottom:2px;min-width:15px;line-height:15px;font-size:10.5px;font-weight:800;text-align:center;border-radius:3px;padding:0 2px;color:#fff;background:#000c;border:1px solid #fffa}
@@ -792,7 +794,7 @@ main{display:grid;grid-template-columns:340px minmax(0,1fr);gap:12px;padding:10p
       <p><b>A · aceitar</b>: a caixa <span class="cor prop">roxa cheia</span> marca a lesão do seed (a da caixa azul do seed), mais ou menos como a desenharias.</p>
       <p><b>R · rejeitar</b>: não marca a lesão do seed: está noutra coisa, ou a lesão não está no frame.</p>
       <p><b>N · não dá para decidir</b>: a imagem não deixa ver, não reconheces a lesão do seed, ou não tens a certeza de que é a mesma.</p>
-      <p class="mut"><span class="cor orig">azul</span>: caixa original (do Rodrigo; pode ter erros) · <span class="cor prop">roxo cheio</span>: caixa a rever · <span class="cor mod">roxo tracejado</span>: caixa do modelo noutro frame.</p>
+      <p class="mut"><span class="cor orig">azul</span>: caixa original (do Rodrigo; pode ter erros) · <span class="cor prop">roxo cheio</span>: caixa a rever · <span class="cor mod">roxo tracejado (por fora)</span>: caixa do modelo noutro frame, só contexto.</p>
       <p class="mut">Se a caixa azul do seed não marca nada claro: nota «seed duvidoso» e N em todas as caixas da janela.</p>
     </div>
   </aside>
@@ -936,14 +938,13 @@ async function abrirJanela(j) {
   $("desc").innerHTML = J.descricao ? J.descricao.split(" | ").map(d => esc(d.replace(/_/g, " "))).join("<br>") : '<span class="mut">(sem descrição)</span>';
   $("cat").textContent = J.categoria ? "categoria (do texto): " + J.categoria.replace(/_/g, " ") : "";
   construirTira();
-  if (J.avisos.length) aviso("Atenção: " + J.avisos.join("; "));
 }
 
 // ------------------------------------------------------------------ o frame à vista e a tira
 async function mostrarItem() {
   // vai para a caixa pos: abre a janela se for preciso, zoom normal e caixas à vista
-  const meu = ++seq, j = E.itens[pos][1];
-  if (!J || J.j !== j) {
+  const meu = ++seq, j = E.itens[pos][1], abriu = !J || J.j !== j;
+  if (abriu) {
     carregando = true;
     try { await abrirJanela(j); } finally { if (meu === seq) carregando = false; }
     if (meu !== seq) return;                     // entretanto pediu-se outra caixa
@@ -951,10 +952,12 @@ async function mostrarItem() {
   repor();
   if (!mostrarCaixa) { mostrarCaixa = true; $("aviso").textContent = ""; }   // ao mudar de caixa, as caixas voltam
   mostrarVista(itemAtual().frame, true);
+  if (abriu && J.avisos.length) aviso("Atenção: " + J.avisos.join("; "));
   preCarregar();
 }
 function mostrarVista(f, nova) {
   desenharOff();
+  if (f !== vista) { clearTimeout(aviso.tm); $("aviso").textContent = ""; }
   vista = f;
   const it = itemDoFrame(f), o = f - J.seed;
   if (it) {
@@ -974,7 +977,7 @@ function mostrarVista(f, nova) {
     $("fr").textContent = o === 0 ? "seed" : `offset ${offTxt(o)}`;
     $("off").textContent = `janela ${J.j + 1}/${E.janelas.length}`;
     emblema(null);
-    $("ctxtxt").textContent = o === 0 ? "o seed: a caixa azul é o que ele segue" : "frame sem caixa para rever";
+    $("ctxtxt").textContent = o === 0 ? "o seed: a caixa azul é o que ele segue" : "só contexto: não é para rever";
     $("nota").disabled = true; $("nota").value = "";
     $("nota").placeholder = "(este frame não tem caixa para rever)";
   }
@@ -1019,7 +1022,7 @@ function atualizarTira() {
   for (const it of J.itens) { if (it.decisao) n[it.decisao]++; else falta++; }
   $("tally").innerHTML = `nesta janela: <b class="t-a">A ${n.aceitar}</b> · <b class="t-r">R ${n.rejeitar}</b> · <b class="t-n">N ${n.nao_avaliavel}</b>` +
     (n.mal_posta ? ` · M ${n.mal_posta}` : "") + " · " + (falta ? `faltam ${falta}` : "todas ✓") +
-    ' &nbsp;|&nbsp; <span class="cor orig">azul</span> original · <span class="cor prop">roxo cheio</span> a rever · <span class="cor mod">roxo tracejado</span> modelo noutro frame';
+    ' &nbsp;|&nbsp; <span class="cor orig">azul</span> original · <span class="cor prop">roxo cheio</span> a rever · <span class="cor mod">roxo tracejado</span> modelo noutro frame (só contexto)';
 }
 function contagens() {
   const n = E.itens.filter(x => x[2]).length;
