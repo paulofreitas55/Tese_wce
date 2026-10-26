@@ -5,6 +5,9 @@ frames numerados, prompt no seed, propagação para a frente e para trás, score
 de L_max, a área (area_px), a retoma, o modo de teste, as variantes de prompt (V1 ponto, V2 ponto + caixa, com pastas
 e nomes próprios) e que o avaliador aceita os CSV. Precisam do PyTorch e do OpenCV; sem eles, saltam.
 O SAM 2 verdadeiro não é carregado. Nunca leem dados reais.
+Versão 1.3 (26 out 2026, sam2_prop.py v1.3): + o nome do método a partir do YAML; um YAML de outro modelo (como o do
+Tiny) com ficheiros e pastas próprios; e o config do modelo fora do pacote sam2 (como o do MedSAM2), este com o
+pacote sam2 instalado, no processador e com pesos aleatórios (sem o sam2, salta).
     python tests/test_sam2.py          ou          python -m pytest tests/ -q
 """
 import contextlib
@@ -272,6 +275,93 @@ def test_sam2_multi_prompt_v5():
         texto = r["resumo"].read_text(encoding="utf-8")
         assert "limite superior" in texto and "12 no total" in texto
         assert ev.main(["calibrar", "--metodo", "SAM2_multi_L3", "--pred", str(r["csv"][3]), "--config", cfg]) == 0
+
+
+# ------------------------------------------------------------------ versão 1.3 (26 out 2026): experiência A
+def test_nome_do_metodo():
+    s2 = _carregar()
+    assert s2.nome_do_metodo({}, "caixa") == "SAM2" and s2.nome_do_metodo({"nome": None}, "multi") == "SAM2_multi"
+    assert s2.nome_do_metodo({"nome": "SAM2T"}, "caixa") == "SAM2T"
+    assert s2.nome_do_metodo({"nome": "MEDSAM2"}, "ponto_caixa") == "MEDSAM2_ponto_caixa"
+    for mau in ("med sam", "MED_SAM2", "2SAM", "SAM/2"):
+        try:
+            s2.nome_do_metodo({"nome": mau}, "caixa")
+            raise AssertionError(f"devia ter parado com {mau!r}")
+        except ev.ErroAvaliacao:
+            pass
+
+
+def test_sam2_outro_modelo_nome_e_pastas():
+    """Um YAML de outro modelo (como o do Tiny) dá ficheiros, partes e máscaras com o nome dele e não toca nos da
+    base; mudar o YAML com as partes já feitas é recusado."""
+    torch = _requisitos()
+    s2 = _carregar()
+    with tempfile.TemporaryDirectory() as tmp:
+        raiz = _mini_projeto(tmp)
+        cfg = str(raiz / "configs/avaliacao.yaml")
+        yml = raiz / "configs/sam2_tiny.yaml"
+        yml.write_text(
+            "versao: 1\nnome: SAM2T\nrepo: sem_repo\ncheckpoint: sem_checkpoint\nmodelo_cfg: x\nl_max: [3]\n"
+            "offload_video_to_cpu: true\noffload_state_to_cpu: false\n"
+            f"partes: {raiz / 'sam2t_partes'}\nmascaras: {raiz / 'masks_sam2t'}\nsaida: {raiz / 'outputs/preds'}\n",
+            encoding="utf-8")
+        base = ["--conjunto", "CAL", "--ds", str(raiz / "DS"), "--config", cfg, "--config-sam2", str(yml),
+                "--sem-progresso"]
+        t = s2.main(base + ["--max-janelas", "1"], modelo=_ModeloFalso(torch))
+        assert t["feitas"] == 1 and not t["csv"] and t["resumo"].name == "sam2t_teste_CAL_resumo.txt"
+        r = s2.main(base, modelo=_ModeloFalso(torch))
+        assert r["saltadas"] == 1 and r["feitas"] == 2
+        assert {k: Path(v).name for k, v in r["csv"].items()} == {3: "pred_SAM2T_L3_CAL.csv"}
+        assert r["resumo"].name == "pred_SAM2T_CAL_resumo.txt"
+        texto = r["resumo"].read_text(encoding="utf-8")
+        assert "prompt: caixa (SAM2T)" in texto and "calibrar --metodo SAM2T_L3" in texto
+        marca = (raiz / "sam2t_partes/CAL/configuracao.txt").read_text(encoding="utf-8")
+        assert "sam2_prop.py v1.3 · sam2_tiny.yaml sha256" in marca and marca.strip().endswith("prompt caixa")
+        assert (raiz / "masks_sam2t/CAL/Dataset_Treino__0101__500.json.gz").is_file()
+        assert not (raiz / "partes").exists() and not (raiz / "masks").exists()     # as pastas da base, intactas
+        p3 = pd.read_csv(r["csv"][3], dtype={"caso": str})
+        assert len(p3) == 59 and p3["score"].between(0, 1).all()
+        assert ev.main(["calibrar", "--metodo", "SAM2T_L3", "--pred", str(r["csv"][3]), "--config", cfg]) == 0
+        yml.write_text(yml.read_text(encoding="utf-8").replace("l_max: [3]", "l_max: [5]"), encoding="utf-8")
+        try:
+            s2.main(base, modelo=_ModeloFalso(torch))
+            raise AssertionError("devia ter parado")
+        except ev.ErroAvaliacao as e:
+            assert "outra configuração" in str(e)
+
+
+def test_config_do_modelo_fora_do_pacote():
+    """O config do MedSAM2 é um ficheiro fora do pacote sam2. Com o sam2 instalado: constrói um Tiny com pesos
+    aleatórios a partir de um config noutra pasta (a 512 px, como o do MedSAM2) e confirma que, a seguir, os configs
+    do pacote continuam a funcionar. Corre no processador; não usa checkpoints verdadeiros."""
+    torch = _requisitos()
+    try:
+        import sam2
+    except ImportError:
+        saltar("falta o pacote sam2")
+    s2 = _carregar()
+    with tempfile.TemporaryDirectory() as tmp:
+        tmp = Path(tmp)
+        tiny = "configs/sam2.1/sam2.1_hiera_t.yaml"
+        ck = tmp / "tiny_aleatorio.pt"
+        torch.save({"model": s2.construir_preditor(tiny, None, "cpu").state_dict()}, ck)
+        txt = (Path(sam2.__file__).parent / tiny).read_text(encoding="utf-8")
+        outra = tmp / "outro_repo" / "configs"
+        outra.mkdir(parents=True)
+        (outra / "t512.yaml").write_text(txt.replace("feat_sizes: [64, 64]", "feat_sizes: [32, 32]")
+                                         .replace("image_size: 1024", "image_size: 512"), encoding="utf-8")
+        conf = {"repo": str(tmp), "repo_pesos": str(tmp / "outro_repo"), "checkpoint": str(ck),
+                "modelo_cfg": str(outra / "t512.yaml"), "modelo_cfg_fora_do_pacote": True}
+        m = s2.ModeloSAM2(conf, dispositivo="cpu")
+        assert m.p.image_size == 512 and m.info["image_size"] == 512
+        assert "t512.yaml (sha256 " in m.info["config"] and "outro_repo (sem git)" in m.info["config"]
+        b = s2.ModeloSAM2({"repo": str(tmp), "checkpoint": str(ck), "modelo_cfg": tiny}, dispositivo="cpu")
+        assert b.p.image_size == 1024 and b.info["config"] == tiny
+        try:
+            s2.ModeloSAM2({**conf, "modelo_cfg": str(outra / "nao_existe.yaml")}, dispositivo="cpu")
+            raise AssertionError("devia ter parado")
+        except ev.ErroAvaliacao as e:
+            assert "modelo_cfg_fora_do_pacote" in str(e)
 
 
 if __name__ == "__main__":

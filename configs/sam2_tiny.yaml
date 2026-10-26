@@ -1,0 +1,14 @@
+# Experiência A (decisoes.md, 24 e 26 out 2026) — SAM 2.1 Tiny, lido por methods/sam2_prop.py v1.3. O mesmo
+# procedimento do SAM2_L12 (configs/sam2.yaml): só mudam o checkpoint e o config do modelo. Pastas próprias para as
+# partes e as máscaras. Caminhos relativos à pasta do projeto; ml_models/ e outputs/ ficam fora do git.
+versao: 1
+nome: SAM2T                                                     # nome do método: SAM2T_L12
+repo: ml_models/sam2                                            # clone de github.com/facebookresearch/sam2
+checkpoint: ml_models/sam2/checkpoints/sam2.1_hiera_tiny.pt     # dl.fbaipublicfiles.com/segment_anything_2/092824/
+modelo_cfg: configs/sam2.1/sam2.1_hiera_t.yaml                  # config do modelo dentro do pacote sam2 (1024 px)
+l_max: [12]                     # só o L12, como o método principal
+offload_video_to_cpu: true      # os frames ficam na memória do processador (poupa a GPU)
+offload_state_to_cpu: false     # pôr a true se faltar memória na GPU (mais lento)
+partes: outputs/preds/sam2t_partes  # um CSV por janela, para a retoma
+mascaras: outputs/masks_sam2t       # máscaras em RLE, uma por janela
+saida: outputs/preds

@@ -24,8 +24,16 @@ Para cada janela (frames pela ordem numérica de annotations_v1.csv):
      máscara, em 0–1. Nos frames para lá de L_max: score 0, sem caixa, área 0.
   4. Grava as máscaras em RLE (formato COCO, por colunas) em outputs/masks/<CONJUNTO>/, uma por janela.
 Variantes de L_max (configs/sam2.yaml): SAM2_L12, SAM2_L29, SAM2_L100 (o protocolo começa em 12; comparam-se em CAL).
-Modelo: sam2.1_hiera_base_plus (configs/sam2.yaml), em bfloat16 na GPU, como nos exemplos do SAM 2; os frames ficam na
-memória do processador (offload_video_to_cpu) para poupar a da GPU. Uma janela de cada vez.
+Modelo: o do YAML (--config-sam2), em bfloat16 na GPU, como nos exemplos do SAM 2; os frames ficam na memória do
+processador (offload_video_to_cpu) para poupar a da GPU. Uma janela de cada vez. O código é sempre o do pacote sam2
+instalado (ml_models/sam2); o YAML diz o checkpoint, o config do modelo e o nome do método:
+  configs/sam2.yaml       SAM 2.1 base+ (método principal; nome SAM2 → SAM2_L12)
+  configs/sam2_tiny.yaml  SAM 2.1 Tiny (nome SAM2T → SAM2T_L12)                     comparação extra (experiência A)
+  configs/medsam2.yaml    MedSAM2: o Tiny afinado com dados médicos, a 512 px        comparação extra (experiência A)
+                          (nome MEDSAM2 → MEDSAM2_L12); o config do modelo é um ficheiro do clone do MedSAM2, fora do
+                          pacote sam2 (modelo_cfg_fora_do_pacote: true): o Hydra lê-o dessa pasta só durante a
+                          construção do modelo.
+Sem o campo nome, o nome é SAM2 (como na versão 1.2). Cada YAML tem as suas pastas de partes e de máscaras.
 Retoma: cada janela grava um CSV em outputs/preds/sam2_partes/<CONJUNTO>/ e as janelas já feitas são saltadas. As
 variantes de prompt têm partes e máscaras em pastas próprias (sam2_partes_ponto/, masks_ponto/, …).
 Sem a extensão CUDA do SAM 2 (_C), o SAM 2 não preenche os buracos pequenos das máscaras e avisava em cada janela; o
@@ -35,12 +43,16 @@ Uso, a partir da pasta do projeto, depois do source …/inicio.sh:
     python methods/sam2_prop.py --conjunto CAL --ds "$DS" --max-janelas 1     (teste: só a 1.ª janela)
     python methods/sam2_prop.py --conjunto CAL --ds "$DS"                     (caixa)
     python methods/sam2_prop.py --conjunto CAL --ds "$DS" --prompt ponto      (V1; ponto_caixa para o V2; multi, V5)
-Gera em outputs/preds/: pred_<NOME>_L<L>_<CONJUNTO>.csv (NOME = SAM2, SAM2_ponto, SAM2_ponto_caixa ou SAM2_multi;
-colunas split, caso, seed, frame, score, box_x1 … box_y2, area_px), no formato do avaliador, e
-pred_<NOME>_<CONJUNTO>_resumo.txt.
+    python methods/sam2_prop.py --conjunto CAL --ds "$DS" --config-sam2 configs/medsam2.yaml   (outro modelo)
+Gera em outputs/preds/: pred_<NOME>_L<L>_<CONJUNTO>.csv (NOME = SAM2, SAM2_ponto, SAM2_ponto_caixa ou SAM2_multi,
+com SAM2 trocado pelo nome do YAML; colunas split, caso, seed, frame, score, box_x1 … box_y2, area_px), no formato
+do avaliador, e pred_<NOME>_<CONJUNTO>_resumo.txt.
 Depois, por variante:
     python eval/evaluate.py calibrar --metodo SAM2_L<L> --pred outputs/preds/pred_SAM2_L<L>_CAL.csv
-VAL_EX e TEST_BOX só no A7.
+VAL_EX e TEST_BOX só depois de congelar (A7; na experiência A, o congelamento dela).
+
+Versões: 1.2 (A4/A5) · 1.3 (26 out 2026): o modelo vem do YAML (nome, checkpoint e config, também fora do pacote
+sam2), para a comparação extra base+ / Tiny / MedSAM2 (experiência A). Com os YAML antigos faz o mesmo que a 1.2.
 """
 import argparse
 import contextlib
@@ -49,6 +61,7 @@ import gzip
 import json
 import math
 import os
+import re
 import subprocess
 import sys
 import tempfile
@@ -66,11 +79,22 @@ import evaluate as ev  # noqa: E402
 from b1_global import frames_das_janelas  # noqa: E402
 from b2_local import caixas_do_seed  # noqa: E402
 
-VERSAO = "1.2"
+VERSAO = "1.3"
 CAIXA = ["box_x1", "box_y1", "box_x2", "box_y2"]
 PROMPTS = {"caixa": "SAM2", "ponto": "SAM2_ponto", "ponto_caixa": "SAM2_ponto_caixa",   # prompt → nome do método
            "multi": "SAM2_multi"}
 SO_SEM_REFERENCIA_DE_CAIXAS = ("CAL", "VAL_EX")                             # onde o V5 (multi) pode correr
+
+
+def nome_do_metodo(conf, prompt):
+    """Nome do método (sem o _L<L>): o de PROMPTS, com SAM2 trocado pelo campo nome do YAML (por omissão SAM2)."""
+    base = str(conf.get("nome") or "SAM2")
+    if not re.fullmatch(r"[A-Za-z][A-Za-z0-9]*", base):
+        raise ev.ErroAvaliacao(f"O nome do modelo no YAML ({base!r}) só pode ter letras e algarismos "
+                               "(vai para os nomes dos ficheiros).")
+    if prompt not in PROMPTS:
+        raise ev.ErroAvaliacao(f"Prompt desconhecido: {prompt} (opções: {', '.join(PROMPTS)}).")
+    return PROMPTS[prompt].replace("SAM2", base, 1)
 
 
 # ============================================================================ máscaras
@@ -158,21 +182,50 @@ def _commit(pasta):
         return "sem git"
 
 
-class ModeloSAM2:
-    """O preditor de vídeo do SAM 2 (pacote sam2 instalado a partir de ml_models/sam2), com o checkpoint do yaml."""
+def construir_preditor(modelo_cfg, checkpoint, dispositivo, fora_do_pacote=False):
+    """SAM2VideoPredictor do pacote sam2 instalado. modelo_cfg é um nome dentro do pacote (ex.:
+    configs/sam2.1/sam2.1_hiera_b+.yaml) ou, com fora_do_pacote, o caminho de um .yaml noutra pasta (ex.: o do
+    MedSAM2): nesse caso o Hydra lê dessa pasta só durante a construção e volta logo aos configs do pacote."""
+    from hydra import initialize_config_dir, initialize_config_module
+    from hydra.core.global_hydra import GlobalHydra
 
-    def __init__(self, conf):
+    import sam2  # noqa: F401  (inicializa o Hydra com os configs do pacote)
+    from sam2.build_sam import build_sam2_video_predictor
+
+    ck = None if checkpoint is None else str(checkpoint)
+    if not fora_do_pacote:
+        return build_sam2_video_predictor(modelo_cfg, ck, device=dispositivo)
+    caminho = Path(modelo_cfg).resolve()
+    if not caminho.is_file():
+        raise ev.ErroAvaliacao(f"Não encontrei o config do modelo {modelo_cfg} (modelo_cfg_fora_do_pacote: true).")
+    GlobalHydra.instance().clear()
+    initialize_config_dir(config_dir=str(caminho.parent), version_base="1.2")
+    try:
+        return build_sam2_video_predictor(caminho.name, ck, device=dispositivo)
+    finally:
+        GlobalHydra.instance().clear()
+        initialize_config_module("sam2", version_base="1.2")
+
+
+class ModeloSAM2:
+    """O preditor de vídeo do SAM 2 (pacote sam2 instalado a partir de ml_models/sam2), com o checkpoint e o config
+    do modelo do yaml."""
+
+    def __init__(self, conf, dispositivo=None):
         import torch
         self.torch = torch
-        self.disp = "cuda" if torch.cuda.is_available() else "cpu"
+        self.disp = dispositivo or ("cuda" if torch.cuda.is_available() else "cpu")
         ck = Path(conf["checkpoint"])
         if not ck.is_file():
-            raise ev.ErroAvaliacao(f"Não encontrei o checkpoint {ck} (configs/sam2.yaml).")
+            raise ev.ErroAvaliacao(f"Não encontrei o checkpoint {ck} (ver o YAML do modelo).")
+        fora = bool(conf.get("modelo_cfg_fora_do_pacote", False))
+        if fora and not Path(conf["modelo_cfg"]).is_file():
+            raise ev.ErroAvaliacao(f"Não encontrei o config do modelo {conf['modelo_cfg']} "
+                                   "(modelo_cfg_fora_do_pacote: true).")
         try:
             import sam2
             import sam2.sam2_video_predictor as preditor_video
             import sam2.utils.misc as misc
-            from sam2.build_sam import build_sam2_video_predictor
         except ImportError:
             raise ev.ErroAvaliacao("Falta o pacote sam2 neste ambiente (ver a instalação em ml_models/sam2).")
 
@@ -188,10 +241,16 @@ class ModeloSAM2:
         if self.disp == "cuda":
             torch.backends.cuda.matmul.allow_tf32 = True                     # como nos exemplos do SAM 2
             torch.backends.cudnn.allow_tf32 = True
-        self.p = build_sam2_video_predictor(conf["modelo_cfg"], str(ck), device=self.disp)
+        self.p = construir_preditor(conf["modelo_cfg"], ck, self.disp, fora)
+        config = conf["modelo_cfg"]
+        if fora:
+            config = f"{config} (sha256 {ev._sha256(config)[:16]})"
+            if conf.get("repo_pesos"):
+                config += f" · {conf['repo_pesos']} ({_commit(conf['repo_pesos'])})"
         self.info = {"codigo": f"{conf['repo']} ({_commit(conf['repo'])}) · pacote {Path(sam2.__file__).parent}",
                      "checkpoint": f"{ck.name} sha256 {ev._sha256(ck)[:16]}", "precisao": "bfloat16"
-                     if self.disp == "cuda" else "float32", "extensao": extensao}
+                     if self.disp == "cuda" else "float32", "extensao": extensao,
+                     "config": config, "image_size": int(self.p.image_size)}
 
     def contexto(self):
         """inference_mode e, na GPU, bfloat16 (como nos exemplos do SAM 2)."""
@@ -320,7 +379,7 @@ def correr(fr, caixas, ds, partes, pasta_mascaras, modelo, conf, max_janelas=Non
 def _marca(pasta, config, prompt):
     pasta.mkdir(parents=True, exist_ok=True)
     marca = pasta / "configuracao.txt"
-    atual = f"sam2_prop.py v{VERSAO} · sam2.yaml sha256 {ev._sha256(config)} · prompt {prompt}"
+    atual = f"sam2_prop.py v{VERSAO} · {Path(config).name} sha256 {ev._sha256(config)} · prompt {prompt}"
     if marca.is_file() and marca.read_text(encoding="utf-8").strip() != atual:
         raise ev.ErroAvaliacao(f"As partes em {pasta} foram feitas com outra configuração; apaga essa pasta para "
                                "recalcular.")
@@ -340,7 +399,8 @@ def main(argv=None, modelo=None):
     a.add_argument("--conjunto", required=True, choices=("CAL", "VAL_EX", "TEST_BOX", "ALL_SEEDBOX"))
     a.add_argument("--ds", default=os.environ.get("DS"), help="pasta do dataset (por omissão, $DS)")
     a.add_argument("--config", default="configs/avaliacao.yaml")
-    a.add_argument("--config-sam2", default="configs/sam2.yaml")
+    a.add_argument("--config-sam2", default="configs/sam2.yaml",
+                   help="YAML do modelo: configs/sam2.yaml (base+), configs/sam2_tiny.yaml ou configs/medsam2.yaml")
     a.add_argument("--prompt", default="caixa", choices=tuple(PROMPTS),
                    help="caixa (base), ponto (V1), ponto_caixa (V2) ou multi (V5, só CAL e VAL_EX)")
     a.add_argument("--max-janelas", type=int, help="só as primeiras N janelas (teste); não junta os CSV finais")
@@ -355,7 +415,7 @@ def main(argv=None, modelo=None):
     cfg = ev.ler_config(args.config)
     conf = ev.ler_config(args.config_sam2)
     l_maxs = sorted({int(x) for x in conf["l_max"]})
-    nome = PROMPTS[args.prompt]
+    nome = nome_do_metodo(conf, args.prompt)
     janelas = ev.ler_conjunto(Path(cfg["caminhos"]["conjuntos"]) / f"{args.conjunto}.json")
     fr = frames_das_janelas(cfg, janelas)
     caixas = caixas_do_seed(cfg, janelas)
@@ -402,12 +462,15 @@ def main(argv=None, modelo=None):
     area = com_mascara["area_px"].to_numpy(dtype=float)
     fps = r["calculados"] / r["segundos_modelo"] if r["segundos_modelo"] > 0 else 0.0
     inf = modelo.info
-    L = [f"SAM 2 ({Path(conf['checkpoint']).name}) em {args.conjunto} · prompt: {args.prompt} ({nome})"
+    L = [f"SAM 2 ({Path(conf['checkpoint']).name}"
+         + (f", {inf['image_size']} px" if inf.get("image_size") else "")
+         + f") em {args.conjunto} · prompt: {args.prompt} ({nome})"
          + (f" · TESTE com {args.max_janelas} janela(s)" if args.max_janelas else "")
          + f" · {datetime.datetime.now():%Y-%m-%d %H:%M} · {estado}",
          f"sam2_prop.py v{VERSAO} · sha256 {ev._sha256(__file__)[:16]} · {Path(args.config_sam2).name} sha256 "
          f"{ev._sha256(args.config_sam2)[:16]} · torch {modelo.torch.__version__} · {modelo.disp} · {inf['precisao']}",
          f"código: {inf['codigo']} · checkpoint: {inf['checkpoint']}"
+         + (f" · config do modelo: {inf['config']}" if inf.get("config") else "")
          + (f" · {inf['extensao']}" if inf.get("extensao") else ""),
          "",
          f"janelas: {r['janelas']} (calculadas agora {r['feitas']}, já feitas antes {r['saltadas']}) · frames "

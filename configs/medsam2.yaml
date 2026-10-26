@@ -1,0 +1,17 @@
+# Experiência A (decisoes.md, 24 e 26 out 2026) — MedSAM2, lido por methods/sam2_prop.py v1.3. O MedSAM2 é o SAM 2.1
+# Tiny afinado com dados médicos, a 512 px. O mesmo procedimento do SAM2_L12 (configs/sam2.yaml): só mudam o checkpoint
+# e o config do modelo. O código é o do pacote sam2 já instalado (ml_models/sam2); o config e os pesos vêm do clone
+# do MedSAM2, que não se instala. Caminhos relativos à pasta do projeto; ml_models/ e outputs/ ficam fora do git.
+versao: 1
+nome: MEDSAM2                                                   # nome do método: MEDSAM2_L12
+repo: ml_models/sam2                                            # código: o pacote sam2 instalado
+repo_pesos: ml_models/MedSAM2                                   # clone de github.com/bowang-lab/MedSAM2 (config e pesos)
+checkpoint: ml_models/MedSAM2/checkpoints/MedSAM2_latest.pt     # de huggingface.co/wanglab/MedSAM2
+modelo_cfg: ml_models/MedSAM2/sam2/configs/sam2.1_hiera_t512.yaml   # o config dos scripts de inferência do MedSAM2
+modelo_cfg_fora_do_pacote: true                                 # o config é um ficheiro, fora do pacote sam2
+l_max: [12]                     # só o L12, como o método principal
+offload_video_to_cpu: true      # os frames ficam na memória do processador (poupa a GPU)
+offload_state_to_cpu: false     # pôr a true se faltar memória na GPU (mais lento)
+partes: outputs/preds/medsam2_partes  # um CSV por janela, para a retoma
+mascaras: outputs/masks_medsam2       # máscaras em RLE, uma por janela
+saida: outputs/preds
