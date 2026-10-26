@@ -1,0 +1,51 @@
+# Congelado na experiência A (scripts/21_extra_congelar.py): não alterar depois da tag extra-congelado.
+metodo: SAM2T_L12
+linha_tabela_mestre: SAM2 Tiny
+etapa: experiência A
+gerado_por:
+  script: methods/sam2_prop.py
+  script_sha256: 506385fc099d56bbcce6feff6e7f81b617cb76cd1e9988cef479eccced4a8072
+  config: configs/sam2_tiny.yaml
+  config_sha256: 8fb30ccb78f186aa1840392a05762f397e30abfd70eb68a1bae18af07e266d30
+geracao_previsoes: sam2_prop.py v1.3 · sam2_tiny.yaml sha256 8fb30ccb78f186aa1840392a05762f397e30abfd70eb68a1bae18af07e266d30
+  · prompt caixa
+modelo:
+  checkpoint: ml_models/sam2/checkpoints/sam2.1_hiera_tiny.pt
+  checkpoint_sha256: 7402e0d864fa82708a20fbd15bc84245c2f26dff0eb43a4b5b93452deb34be69
+  modelo_cfg: configs/sam2.1/sam2.1_hiera_t.yaml
+parametros:
+  prompt: caixa
+  l_max: 12
+pontos_operacao:
+  OP_F1:
+    tau: 0.86
+    a_min: 0.0
+    regra: 'máximo F1 micro em CAL (empates: menor A_min, depois maior τ)'
+  OP_R90:
+    tau: 0.0
+    a_min: 0.0
+    regra: maior τ com recall micro ≥ 0.90 em CAL
+calibracao:
+  ficheiro: outputs/eval/CAL/SAM2T_L12.json
+  sha256: 79e21b13f2171a6db88e4bcf53bdb5b300e2dc39bd08d1cc5628e6938d3c8a34
+  commit: 61d379e
+  previsoes_sha256: 22e4815cc1b538be12b3198a16a69eb550becf49cf9eda8d8647f65a2ac665d4
+conjuntos_teste:
+- VAL_EX
+- TEST_BOX
+previsoes:
+  VAL_EX:
+    ficheiro: outputs/preds/pred_SAM2T_L12_VAL_EX.csv
+    sha256: 568bba1d983bd1f8a8cefe2f306c33a14cbcb6a70d1e98a3ccb0b13baa290fe3
+  TEST_BOX:
+    ficheiro: outputs/preds/pred_SAM2T_L12_TEST_BOX.csv
+    sha256: 6d6a5273c0edeeaa2cd01ee2f2747c4460386858fb0a6001478cf1839ea74c1b
+referencia:
+  metodo: SAM2_L12
+  final: configs/final_SAM2_L12.yaml
+  sha256: 290086ed40644500a6e3468ef78ff1f2a6fa76f836d55f888b79367204fe64b2
+congelado:
+  data: '2026-10-26T14:59:52'
+  script: 21_extra_congelar.py v1.0
+  commit: 61d379e
+  alteracoes_por_guardar: true

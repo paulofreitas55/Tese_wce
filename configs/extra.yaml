@@ -1,0 +1,16 @@
+# Experiência A — congelamento antes da avaliação única (scripts/21_extra_congelar.py). O desenho está em
+# docs/decisoes.md (24 e 26 out 2026). O SAM2_L12 não se volta a correr nem a congelar: é a referência, congelada no A6
+# (configs/final_SAM2_L12.yaml) e avaliada no A7.
+versao: 1
+etapa: experiência A
+tag: extra-congelado
+referencia: SAM2_L12
+previsoes: outputs/preds
+conjuntos: [VAL_EX, TEST_BOX]
+metodos:
+  - {metodo: SAM2T_L12, linha: "SAM2 Tiny", script: methods/sam2_prop.py, config: configs/sam2_tiny.yaml, parametros: {prompt: caixa, l_max: 12}}
+  - {metodo: MEDSAM2_L12, linha: "MedSAM2", script: methods/sam2_prop.py, config: configs/medsam2.yaml, parametros: {prompt: caixa, l_max: 12}}
+comparacoes:                  # pré-definidas (26 out): a − b, diferença pareada por janela no OP-F1
+  - [SAM2T_L12, SAM2_L12]     # o tamanho conta?
+  - [MEDSAM2_L12, SAM2T_L12]  # a afinação médica ajuda?
+  - [MEDSAM2_L12, SAM2_L12]

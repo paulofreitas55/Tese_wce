@@ -1,0 +1,52 @@
+# Congelado na experiência A (scripts/21_extra_congelar.py): não alterar depois da tag extra-congelado.
+metodo: MEDSAM2_L12
+linha_tabela_mestre: MedSAM2
+etapa: experiência A
+gerado_por:
+  script: methods/sam2_prop.py
+  script_sha256: 506385fc099d56bbcce6feff6e7f81b617cb76cd1e9988cef479eccced4a8072
+  config: configs/medsam2.yaml
+  config_sha256: 1d9bd97c6d6e79041da616aa485857f77f8d4d75787ae327de7b1e60e622a28c
+geracao_previsoes: sam2_prop.py v1.3 · medsam2.yaml sha256 1d9bd97c6d6e79041da616aa485857f77f8d4d75787ae327de7b1e60e622a28c
+  · prompt caixa
+modelo:
+  checkpoint: ml_models/MedSAM2/checkpoints/MedSAM2_latest.pt
+  checkpoint_sha256: c92743b99f00d078bf32a3afcc38aaa9faf1c1692dffe3eaa7a90938c1991060
+  modelo_cfg: ml_models/MedSAM2/sam2/configs/sam2.1_hiera_t512.yaml
+  modelo_cfg_sha256: dbab39b9ca69c521bf05596b87aeb9f2901e8430f954a85bbf62c698dfc5f54b
+parametros:
+  prompt: caixa
+  l_max: 12
+pontos_operacao:
+  OP_F1:
+    tau: 0.44
+    a_min: 0.0
+    regra: 'máximo F1 micro em CAL (empates: menor A_min, depois maior τ)'
+  OP_R90:
+    tau: 0.0
+    a_min: 0.0
+    regra: maior τ com recall micro ≥ 0.90 em CAL
+calibracao:
+  ficheiro: outputs/eval/CAL/MEDSAM2_L12.json
+  sha256: bd9857cbf8d0cfa9022a1a43aa0a63345b5776ffd602475af1fa094b0cb6c9b0
+  commit: 61d379e
+  previsoes_sha256: 49cb62d7a25ec3d5e074d5422dd3be2fad024e9f959671321fd58851e37e29da
+conjuntos_teste:
+- VAL_EX
+- TEST_BOX
+previsoes:
+  VAL_EX:
+    ficheiro: outputs/preds/pred_MEDSAM2_L12_VAL_EX.csv
+    sha256: cc4146499b8cf32ba6f530e8016fa4548a1aca8ae619967c67fdeaa841a03acd
+  TEST_BOX:
+    ficheiro: outputs/preds/pred_MEDSAM2_L12_TEST_BOX.csv
+    sha256: a5102d1b7552c7c9a903dd4f8bf04496be0bba825cff731a2e7b2709919fcbf2
+referencia:
+  metodo: SAM2_L12
+  final: configs/final_SAM2_L12.yaml
+  sha256: 290086ed40644500a6e3468ef78ff1f2a6fa76f836d55f888b79367204fe64b2
+congelado:
+  data: '2026-10-26T14:59:52'
+  script: 21_extra_congelar.py v1.0
+  commit: 61d379e
+  alteracoes_por_guardar: true
