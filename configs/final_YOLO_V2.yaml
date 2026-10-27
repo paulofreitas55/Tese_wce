@@ -1,0 +1,75 @@
+# Congelado na experiência B (scripts/25_yolo_congelar.py): não alterar depois da tag yolo-congelado.
+metodo: YOLO_V2
+linha_tabela_mestre: YOLO, Dataset WCE v2
+etapa: experiência B
+modelo:
+  pesos: outputs/yolo/runs/YOLO_V2/weights/best.pt
+  pesos_sha256: d8b67f493581d289a3710f3dec417bbf766dd317272f6582167419e49610cc25
+  yolov5: af08ba15
+  pesos_iniciais: yolov5x.pt (COCO, release v7.0 do YOLOv5)
+  treino:
+    pasta: outputs/yolo/runs/YOLO_V2
+    opt_yaml_sha256: 0ed41fda5c5023ce1382b157e0dcf1d0cb951bb0bda2743fc7a30747a573df06
+    hyp_yaml_sha256: c1fb3a39e47771e5bbb54adde0b0f370303ceb8ddf908b9d103710fb1a804bfb
+    weights: yolov5x.pt
+    data: /mnt/paulo/tese_2026/Update_Final/data/derived/yolo/v2/treino.yaml
+    epochs: 100
+    batch_size: 8
+    imgsz: 416
+    patience: 20
+    seed: 0
+    workers: 2
+    optimizer: SGD
+    dados_sha256: 004437348348f0fd62f312e0684b0de844743ded3c01051df078174d02e488c8
+    epocas_feitas: 76
+    melhor_epoca: 55
+    validacao_na_melhor:
+      mAP50: 0.46336
+      mAP50_95: 0.25208
+      P: 0.52539
+      R: 0.49485
+gerado_por:
+  script: scripts/24_yolo_prever.py
+  script_sha256: dd4a272fb75120d3ac86ddb4eee9de8dab0362a730e4717c93b71b26ce4555c6
+geracao_previsoes: 24_yolo_prever.py v1.0 · pesos outputs/yolo/runs/YOLO_V2/weights/best.pt
+  sha256 d8b67f493581d289a3710f3dec417bbf766dd317272f6582167419e49610cc25 · imgsz
+  416 · conf 0.001 · iou 0.6 · multi_label · max_det 300 · yolov5 af08ba15 · conjuntos
+  sha256 b3d76ad08c3165b5
+pontos_operacao:
+  OP_F1:
+    tau: 0.56
+    a_min: 0.0
+    regra: 'máximo F1 micro em CAL (empates: menor A_min, depois maior τ)'
+  OP_R90:
+    tau: 0.0
+    a_min: 0.0
+    regra: maior τ com recall micro ≥ 0.90 em CAL
+calibracao:
+  ficheiro: outputs/eval/CAL/YOLO_V2.json
+  sha256: bdceb57e51d351ecf48164da33aa45c0d4d451ffc080289510c0fcef6e873554
+  commit: 830db54
+  previsoes_sha256: ef7b4ba7d82945d1d18eee3721a6c9113627cdc59c25e3f88186cc0aa6451eef
+  conjunto: data/derived/yolo/conjuntos/CAL_6classes.csv
+  conjunto_sha256: 495d2f91abbbb902d8ec4e5d143b0d194a3144bc6480210ade9542f819b72a3f
+conjuntos_teste:
+- VAL_EX
+- TEST_BOX
+conjuntos_ficheiros:
+  VAL_EX:
+    ficheiro: data/derived/yolo/conjuntos/VAL_EX_6classes.csv
+    sha256: a314246ea71929feca086bb1b86ee17e4aadd45db6a09fcffe07ff0794e28f7e
+  TEST_BOX:
+    ficheiro: data/derived/yolo/conjuntos/TEST_BOX_6classes.csv
+    sha256: 8dcf96e2b2fb0c4aaf854d9d5493d8fa2cb3d8b64b73770fed31b9551dfae6c5
+previsoes:
+  VAL_EX:
+    ficheiro: outputs/preds/pred_YOLO_V2_VAL_EX.csv
+    sha256: 4e897cad74bff10bf22f364a1891990f481d357d733826f2a588422e7972ee93
+  TEST_BOX:
+    ficheiro: outputs/preds/pred_YOLO_V2_TEST_BOX.csv
+    sha256: 98e450abaa311c0257c5d07afe226fa52755b714cf78fe766f566f56a9729297
+congelado:
+  data: '2026-10-27T09:43:31'
+  script: 25_yolo_congelar.py v1.0
+  commit: 830db54
+  alteracoes_por_guardar: false
